@@ -1,4 +1,5 @@
 import numpy
-from fileIO.readData import load
+from fileIO.readData import *
 
-load()
+train_x, train_y, test_x, test_y = load()
+linear_regression(train_x, train_y, test_x, test_y)
