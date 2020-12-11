@@ -29,14 +29,11 @@ def display_digit(pic, label):
     plt.show()
     print("Label = " + str(label))
 
-def load():
-    file = "data/mfeat-pix.txt"
-    mfeat_pix = np.loadtxt(file, dtype='i', delimiter=',')
-
+def plotNumbers(data):
     fig, ax = plt.subplots(10, 10, sharex='col', sharey='row')
     for i in range(0, 10):
         for j in range(0, 10):
-            pic = np.array(mfeat_pix[200 * (i)+j][:])
+            pic = np.array(data[200 * (i)+j][:])
             picmatreverse = np.zeros((15,16))
             #the filling is done column wise
             picmatreverse = -pic.reshape(15,16, order = 'F')            
@@ -47,8 +44,14 @@ def load():
             picmat = np.flip(picmat, 0)
             picmat = np.flip(picmat, 1)
             ax[i, j].pcolor(picmat, cmap='Greys')
-        
+            
     plt.show()
+
+def load(plot=True):
+    file = "data/mfeat-pix.txt"
+    mfeat_pix = np.loadtxt(file, dtype='i', delimiter=',')
+    if plot:
+        plotNumbers(mfeat_pix)
 
     # store labels for corresponding digits and shuffle
     data = mfeat_pix
