@@ -3,7 +3,7 @@ from fileIO.readData import *
 from Components.pca import pca
 
 train_x, train_y, test_x, test_y = load(plot=False, vector_representation=False)
-pcaTrain, pcaTest, percentageExplainedPC  = pca(train_x, test_x, nComponents=60)
+pcaTrain, pcaTest, percentageExplainedPC  = pca(train_x, test_x, nComponents=60, plot=True)
 
 linear_regression(train_x, train_y, test_x, test_y)
 
