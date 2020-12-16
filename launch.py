@@ -5,7 +5,7 @@ from Visualisation import plotNumbers, plotTrainTestPerformance
 
 
 x_train, y_train, x_test, y_test = load(.8)
-linear_regression(x_train, y_train, x_test, y_test)
+print(linear_regression(x_train, y_train, x_test, y_test))
 
 trainingError = list()
 testingError = list()
