@@ -1,10 +1,19 @@
-import numpy
-from fileIO.readData import *
-from Components.pca import pca
+import numpy as np
+from FileIO import load
+from Components import pca, linear_regression
+from Visualisation import plotNumbers, plotTrainTestPerformance
 
-train_x, train_y, test_x, test_y = load(plot=False, vector_representation=False)
-pcaTrain, pcaTest, percentageExplainedPC  = pca(train_x, test_x, nComponents=60, plot=True)
 
-linear_regression(train_x, train_y, test_x, test_y)
+x_train, y_train, x_test, y_test = load(.8)
+linear_regression(x_train, y_train, x_test, y_test)
 
-linear_regression(pcaTrain, train_y, pcaTest, test_y)
+trainingError = list()
+testingError = list()
+for m in range(1,200):
+    pcaTrain, pcaTest, percentageExplainedPC  = pca(x_train, x_test, nComponents=m, plot=False)
+    results = linear_regression(pcaTrain, y_train, pcaTest, y_test)
+    trainingError.append(results[0])
+    testingError.append(results[1])
+
+plotTrainTestPerformance(trainingError, testingError)
+
