@@ -15,5 +15,6 @@ for m in range(1,200):
     trainingError.append(results[0])
     testingError.append(results[1])
 
-plotTrainTestPerformance(trainingError, testingError)
+plotTrainTestPerformance(trainingError, testingError, 'Principal Components')
+
 

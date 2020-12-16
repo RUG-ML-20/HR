@@ -12,8 +12,13 @@ def plotNumbers(data):
             ax[i, j].pcolor(picmat, cmap='Greys')
     plt.show()
 
-def plotTrainTestPerformance(train, test):
+def plotTrainTestPerformance(train, test, change):
     plt.plot(train)
     plt.plot(test)
+    plt.title('Training vs Testing error')
+    plt.xlabel(change)
+    plt.ylabel('Accuracy')
+    plt.legend(['training', 'testing'], loc=4)
+
     plt.show()
     pass
