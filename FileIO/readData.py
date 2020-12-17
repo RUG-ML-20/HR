@@ -1,9 +1,11 @@
 import numpy as np
 
-#shuffles the dataset randomly, so the order of digits is different every time
+
+# shuffles the dataset randomly, so the order of digits is different every time
 def shuffling(X_train, y_train):
     shuffled_rows = np.random.permutation(X_train.shape[0])
     return X_train[shuffled_rows], y_train[shuffled_rows]
+
 
 def createLabels(data):
     labels = list()
@@ -14,8 +16,9 @@ def createLabels(data):
             class_label += 1
     return labels
 
-#load a split data
-def load(split = .5):
+
+# load a split data
+def load(split=.5):
     file = "data/mfeat-pix.txt"
     data = np.loadtxt(file, dtype='i', delimiter=',')
     # store labels for corresponding digits and shuffle
@@ -30,4 +33,3 @@ def load(split = .5):
     test_Y = np.array(data_Y[train_test_split:])
 
     return train_X, train_Y, test_X, test_Y
-
