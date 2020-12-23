@@ -2,8 +2,8 @@ import torch
 from torch.autograd import Variable
 from torch.nn import Linear, ReLU, CrossEntropyLoss, Sequential, Conv2d, MaxPool2d, Module, Softmax, BatchNorm2d, Dropout
 from torch.optim import Adam, SGD
-import torch.nn.functional as F
-
+from Components import matrices_to_tensors
+from Visualisation import plotTrainTestPerformance
 
 ## Architecture
 class Net(Module):
@@ -39,21 +39,12 @@ def cnn(x_train, y_train, x_test, y_test):
     optimizer = Adam(model.parameters(), lr=0.07)
     #defining the loss function
     criterion = CrossEntropyLoss()
-    # converting the data into torch format
-    train_x = x_train.reshape(1600, 1, 16, 15)
-    train_x = torch.from_numpy(train_x)
-    train_y = y_train.astype(int)
-    train_y = torch.from_numpy(train_y)
-    train_x = train_x.float()
-    x_test = x_test.reshape(400, 1, 16, 15)
-    test_x = torch.from_numpy(x_test)
-    test_x = test_x.float()
-    test_y = y_test.astype(int)
-    test_y = torch.from_numpy(test_y)
-
+    # transform data into tensors
+    train_x, train_y, test_x, test_y = matrices_to_tensors(x_train, y_train, x_test, y_test)
     # training and getting accuracy on test set
     loss_list = []
-    acc_list = []
+    acc_list_train = []
+    acc_list_test = []
     num_epochs = 100
     for epoch in range(num_epochs):
         # Here we feed in training data and perform backprop according to the loss
@@ -67,11 +58,18 @@ def cnn(x_train, y_train, x_test, y_test):
             loss.backward()
             optimizer.step()
 
+            total = train_y.size(0)
+            _, predicted = torch.max(outputs.data, 1)
+            correct = (predicted == train_y).sum().item()
+            acc_list_train.append(correct / total)
+
         # Track the accuracy on the testing set / testing set is not used for training no backprop
         # based on these outputs
             outputs_test = model.forward(test_x)
             total = test_y.size(0)
             _, predicted = torch.max(outputs_test.data, 1)
             correct = (predicted == test_y).sum().item()
-            acc_list.append(correct / total)
-            print("Accuracy on test set: " + str((correct/total) * 100))
+            acc_list_test.append(correct / total)
+
+    plotTrainTestPerformance(acc_list_train, acc_list_test, "num_epochs")
+    print("Last accuracy test: " + str(acc_list_test[num_epochs-1]))

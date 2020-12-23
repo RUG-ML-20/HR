@@ -1,5 +1,5 @@
 import numpy as np
-
+import torch
 
 # returns the matrix representation of a vector and if plot = True plots the digit
 def vector_to_matrix(pic):
@@ -20,3 +20,17 @@ def vectors_to_matrices(vectors):
     for vector in vectors:
         matrices.append(vector_to_matrix(vector))
     return np.array(matrices)
+
+def matrices_to_tensors(x_train, y_train, x_test, y_test):
+    # converting the data into torch format
+    train_x = x_train.reshape(1600, 1, 16, 15)
+    train_x = torch.from_numpy(train_x)
+    train_y = y_train.astype(int)
+    train_y = torch.from_numpy(train_y)
+    train_x = train_x.float()
+    x_test = x_test.reshape(400, 1, 16, 15)
+    test_x = torch.from_numpy(x_test)
+    test_x = test_x.float()
+    test_y = y_test.astype(int)
+    test_y = torch.from_numpy(test_y)
+    return train_x, train_y, test_x, test_y
