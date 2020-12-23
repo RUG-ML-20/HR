@@ -1,5 +1,5 @@
 import numpy as np
-from fileIO import load
+from FileIO import load
 from Components import pca, linear_regression, vectors_to_matrices
 from CNN import cnn
 from Visualisation import plotNumbers, plotTrainTestPerformance
