@@ -39,3 +39,28 @@ def linear_regression(train_x, train_y, test_x, test_y):
     trainAccuracy = reg.score(train_x, train_y)
     testAccuracy = reg.score(test_x, test_y)
     return trainAccuracy, testAccuracy
+
+def data_analysis(train_x, train_y, test_x, test_y):
+    all_xs = np.concatenate((train_x, test_x), axis=0)
+    all_ys = np.concatenate((train_y, test_y), axis=0)
+    table = list()
+    table.append(count_occurrences(all_ys))
+    table.append(count_occurrences(train_y))
+    table.append(count_occurrences(test_y))
+    table = np.array(table)
+    titles = ['overall', 'train', 'test']
+    frame = pd.DataFrame(table, index = titles, columns=range(0,10))
+    print(frame)
+    pass
+
+def count_occurrences(ys):
+    occurrences = [0,0,0,0,0,0,0,0,0,0]
+    total = ys.size
+    for y in ys:
+        occurrences[int(y)] += 1
+
+    return occurrences
+
+
+
+
