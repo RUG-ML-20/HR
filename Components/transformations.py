@@ -23,12 +23,12 @@ def vectors_to_matrices(vectors):
 
 def matrices_to_tensors(x_train, y_train, x_test, y_test):
     # converting the data into torch format
-    train_x = x_train.reshape(1600, 1, 16, 15)
+    train_x = x_train.reshape(x_train.shape[0], 1, 16, 15)
     train_x = torch.from_numpy(train_x)
     train_y = y_train.astype(int)
     train_y = torch.from_numpy(train_y)
     train_x = train_x.float()
-    x_test = x_test.reshape(400, 1, 16, 15)
+    x_test = x_test.reshape(x_test.shape[0], 1, 16, 15)
     test_x = torch.from_numpy(x_test)
     test_x = test_x.float()
     test_y = y_test.astype(int)
