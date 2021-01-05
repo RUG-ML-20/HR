@@ -49,6 +49,7 @@ def cnn(train_x, train_y, test_x, test_y, epochs, learningRate):
         # Here we feed in training data and perform backprop according to the loss
         # Run the forward pass
         outputs = model.forward(train_x)
+        train_y = train_y.long()
         loss = criterion(outputs, train_y)
         loss_list.append(loss.item())
 
@@ -57,7 +58,7 @@ def cnn(train_x, train_y, test_x, test_y, epochs, learningRate):
         loss.backward()
         optimizer.step()
 
-        total = train_y.size(0)
+        total = len(train_y)
         _, predicted = torch.max(outputs.data, 1)
         correct = (predicted == train_y).sum().item()
         acc_list_train.append(correct / total)
