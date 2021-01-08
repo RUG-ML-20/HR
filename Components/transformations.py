@@ -22,8 +22,8 @@ def vectors_to_matrices(vectors):
     return np.array(matrices)
 
 def matrices_to_tensors(x_train, y_train, x_test, y_test):
-    # converting the data into torch format
-    train_x = x_train.reshape(1600, 1, 16, 15)
+    train_shape = x_train.shape[0]
+    train_x = x_train.reshape(train_shape, 1, 16, 15)
     train_x = torch.from_numpy(train_x)
     train_y = y_train.astype(int)
     train_y = torch.from_numpy(train_y)
