@@ -8,39 +8,50 @@ import numpy as np
 
 ## Architecture
 class Net(nn.Module):
-    def __init__(self, input_dim, output_dim, hidden_dim, layers):
+    def __init__(self):
         super(Net, self).__init__()
-        self.input_dim = input_dim
-        self.out_dim = output_dim
-        self.hidden_dim = hidden_dim
-        current_dim = input_dim
-        self.layers = nn.ModuleList()
         self.to_linear = None
-        for hdim in range(layers-1):
-            self.layers.append(newLayer(current_dim, hidden_dim))
-            current_dim = hidden_dim
+        # sets the sequential layers
+        self.sequential_layers_conv = sequential_layers_conv()
+        # set a random image to feed into convs to calculate output dim
         x = torch.randn(15,16).view(-1,1,15,16)
         self.convs(x)
-        self.linear1 = nn.Linear(self.to_linear, 10)
-
+        # here you could print how many units there are before the linear layers (might be helpful)
+        #print('to_linear')
+        #print(self.to_linear)
+        self.linear = sequential_layers_linear(self.to_linear)
 
     def convs(self, x):
-        for layer in self.layers[:-1]:
-            x = layer(x)
+        x = self.sequential_layers_conv(x)
+        # calculate how many output units there will be after the convolutional layers
         if self.to_linear is None:
-            self.to_linear = x[0].shape[0] * x[0].shape[1] * x[0].shape[2]
+            self.to_linear = x.shape[1] * x.shape[2] * x.shape[3]
+
         return x
 
     def forward(self, x):
         x = self.convs(x)
         x = x.view(-1, self.to_linear)
-        x = self.linear1(x)
+        x = self.linear(x)
+
         return x
 
-def newLayer(input, output):
+
+# specifies the linear layers with the input being calculated before (to_linear)
+def sequential_layers_linear(to_linear):
+    layer = nn.Sequential(nn.Linear(to_linear, 10))
+
+    return layer
+
+
+# specify the network architecture here
+def sequential_layers_conv():
     layer = nn.Sequential(
-            nn.Conv2d(input, output, kernel_size=2, stride=1, padding=0),
-            nn.BatchNorm2d(4),
+            nn.Conv2d(1, 6, kernel_size=(3,4), stride=1, padding=1),
+            nn.BatchNorm2d(6),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(6, 10, kernel_size=4, stride=1, padding=0),
+            nn.BatchNorm2d(10),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2)
             )
@@ -48,15 +59,11 @@ def newLayer(input, output):
     return layer
 
 
-def cnn(train_x, train_y, test_x, test_y, epochs, learningRate, dimensions):
+def cnn(train_x, train_y, test_x, test_y, epochs, learningRate):
     data = matrices_to_tensors(train_x, train_y, test_x, test_y)
-    model_input = dimensions[0]
-    model_output = dimensions[1]
-    hidden_output = dimensions[2]
-    hidden_layers = dimensions[3]
-
-    model = Net(model_input,model_output,hidden_output,hidden_layers)
+    model = Net()
     model = model.float()
+    #print(model)
     optimizer = Adam(model.parameters(), lr=learningRate)
     criterion = nn.CrossEntropyLoss()
     results = run_model(model, data, epochs, optimizer, criterion)
@@ -105,16 +112,21 @@ def crossvalidationCNN(train, labels, k):
     accTrain = list()
     accTest = list()
     loss = list()
-    model_dimensions = (1,10,4,3) #(input channels, output channels, hiddenlayer outputs, number of hidden layers)
+    avg_acc_train = 0
+    avg_acc_test = 0
     for fold in range(0, k):
         print('fold: ',fold+1)
         train_x, train_y, test_x, test_y = get_fold(folds_x, folds_y, fold)
-        results = cnn(train_x, train_y, test_x, test_y, 100, 0.07, model_dimensions)
+        results = cnn(train_x, train_y, test_x, test_y, 100, 0.07)
         accTrain.append(results[0])
         accTest.append(results[1])
         loss.append(results[2])
-        print('final accuracy reading')
+        print('fold accuracy reading')
         print('train: ',accTrain[fold][-1],'test: ',accTest[fold][-1])
+        avg_acc_train += accTrain[fold][-1]
+        avg_acc_test += accTest[fold][-1]
+    print('Average accuracy reading')
+    print('train: ' + str(avg_acc_train/k) + 'test: ' + str(avg_acc_test/k))
     return accTrain, accTest, loss
 
 '''
@@ -152,7 +164,7 @@ def split_check(n, k):
         u += 1
     print(f'Warning: current k: {k} for kfold crossvalidation would not divide folds correctly')
     print(f'the new k: {nk} was chosen instead')
-
+    return nk
 
 
     
