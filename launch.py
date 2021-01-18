@@ -12,7 +12,7 @@ x_train, y_train, x_test, y_test = load(1)
 # y = np.array(y)
 # crossvalidationCNN(x, y, 4)
 #plotNumbers(x_train)
-crossvalidationCNN(x_train, y_train, 2)
+crossvalidationCNN(x_train, y_train, 8)
 
 data_analysis(x_train, y_train, x_test, y_test)
 

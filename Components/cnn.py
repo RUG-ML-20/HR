@@ -2,7 +2,7 @@ import torch
 from torch.autograd import Variable
 import torch.nn as nn
 from torch.optim import Adam, SGD
-from Components import matrices_to_tensors
+from Components import matrices_to_tensors, labels_to_vectors
 from Visualisation import plotTrainTestPerformance
 import numpy as np
 
@@ -33,7 +33,6 @@ class Net(nn.Module):
         x = self.convs(x)
         x = x.view(-1, self.to_linear)
         x = self.linear(x)
-
         return x
 
 
@@ -74,24 +73,34 @@ def run_model(model, data, epochs, optimizer, criterion):
     acc_list_train = []
     acc_list_test = []
     loss_list = []
-    
+    # here you can choose the batch size (currently its set to how all images at once)
+    batch_size = train_x.shape[0]
+    batch_num = train_x.shape[0]/batch_size
+    train_x = train_x.reshape(-1, batch_size, 1, 15, 16)
+    train_y = train_y.reshape(-1, batch_size)
+
     for epoch in range(epochs):
-        # Here we feed in training data and perform backprop according to the loss
-        # Run the forward pass
-        outputs = model.forward(train_x)
-        train_y = train_y.long()
-        loss = criterion(outputs, train_y)
-        loss_list.append(loss.item())
+        correct = 0
+        # loop over the number of batches feeds in batch_size many images and performs backprob
+        # then again and so on
+        for i in range(0, int(batch_num)):
+            # Here we feed in training data and perform backprop according to the loss
+            # Run the forward pass
+            outputs = model.forward(train_x[i])
+            train_y = train_y.long()
+            loss = criterion(outputs, train_y[i])
+            loss_list.append(loss.item())
 
-        # Backprop and perform Adam optimisation
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+            # Backprop and perform Adam optimisation
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
-        total = len(train_y)
-        _, predicted = torch.max(outputs.data, 1)
-        correct = (predicted == train_y).sum().item()
-        acc_list_train.append(correct / total)
+            predicted = torch.max(outputs.data, 1)
+            correct += (predicted[1] == train_y[i]).sum()
+
+        total = int(batch_num * batch_size)
+        acc_list_train.append(float(correct) / total)
 
         # Track the accuracy on the testing set / testing set is not used for training no backprop
         # based on these outputs

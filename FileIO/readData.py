@@ -38,7 +38,7 @@ def load(split=.5):
     data = np.loadtxt(file, dtype='i', delimiter=',')
     # store labels for corresponding digits and shuffle
     labels = np.array(createLabels(data))
-    train_x, train_y, test_x, test_y = distribute_digits_split(data, labels,split)
+    train_x, train_y, test_x, test_y = distribute_digits_split(data, labels, split)
 
     train_x, train_y = shuffling(train_x, train_y)
     test_x, test_y = shuffling(test_x, test_y)
