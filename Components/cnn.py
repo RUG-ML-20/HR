@@ -58,12 +58,12 @@ def sequential_layers_conv():
     return layer
 
 
-def cnn(train_x, train_y, test_x, test_y, epochs, learningRate):
+def cnn(train_x, train_y, test_x, test_y, epochs, learningRate, l2_weight_decay):
     data = matrices_to_tensors(train_x, train_y, test_x, test_y)
     model = Net()
     model = model.float()
     #print(model)
-    optimizer = Adam(model.parameters(), lr=learningRate)
+    optimizer = Adam(model.parameters(), lr=learningRate, weight_decay=l2_weight_decay)
     criterion = nn.CrossEntropyLoss()
     results = run_model(model, data, epochs, optimizer, criterion)
     return results
@@ -123,19 +123,23 @@ def crossvalidationCNN(train, labels, k):
     loss = list()
     avg_acc_train = 0
     avg_acc_test = 0
+    #lr = 0.01
+    wd = 0.01
     for fold in range(0, k):
-        print('fold: ',fold+1)
+        print('fold:', fold+1, ', weight decay:', wd)
         train_x, train_y, test_x, test_y = get_fold(folds_x, folds_y, fold)
-        results = cnn(train_x, train_y, test_x, test_y, 100, 0.07)
+        results = cnn(train_x, train_y, test_x, test_y, 100, 0.01, wd)
         accTrain.append(results[0])
         accTest.append(results[1])
         loss.append(results[2])
         print('fold accuracy reading')
-        print('train: ',accTrain[fold][-1],'test: ',accTest[fold][-1])
+        print('train:', accTrain[fold][-1], 'valid:', accTest[fold][-1], '\n')
         avg_acc_train += accTrain[fold][-1]
         avg_acc_test += accTest[fold][-1]
+        #lr += 0.02
+        wd += 0.01
     print('Average accuracy reading')
-    print('train: ' + str(avg_acc_train/k) + 'test: ' + str(avg_acc_test/k))
+    print('train:', str(avg_acc_train/k), 'valid:', str(avg_acc_test/k))
     return accTrain, accTest, loss
 
 '''
