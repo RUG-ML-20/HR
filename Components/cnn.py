@@ -124,7 +124,7 @@ def crossvalidationCNN(train, labels, k):
     avg_acc_train = 0
     avg_acc_test = 0
     #lr = 0.01
-    wd = 0.01
+    wd = 0.001
     for fold in range(0, k):
         print('fold:', fold+1, ', weight decay:', wd)
         train_x, train_y, test_x, test_y = get_fold(folds_x, folds_y, fold)
@@ -137,7 +137,7 @@ def crossvalidationCNN(train, labels, k):
         avg_acc_train += accTrain[fold][-1]
         avg_acc_test += accTest[fold][-1]
         #lr += 0.02
-        wd += 0.01
+        wd += 0.002
     print('Average accuracy reading')
     print('train:', str(avg_acc_train/k), 'valid:', str(avg_acc_test/k))
     return accTrain, accTest, loss
@@ -168,14 +168,15 @@ def split_check(n, k):
         return k
     
     u = 1
-    while n % k + u != 0:
-        if n % k - u != 0:
-            nk = k - u
-        if n % k + u != 0:
-            nk = k + u
-            break
+    while n % (k + u) != 0 and (k - u < 2 or n % (k - u) != 0):
         u += 1
-    print(f'Warning: current k: {k} for kfold crossvalidation would not divide folds correctly')
+
+    if n % (k + u) == 0:
+        nk = k + u
+    elif n % (k - u) == 0:
+        nk = k - u
+
+    print(f'Warning: current K={k} for K-fold cross-validation would not divide folds correctly')
     print(f'the new k: {nk} was chosen instead')
     return nk
 
