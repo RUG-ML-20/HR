@@ -12,10 +12,10 @@ x_train, y_train, x_test, y_test = load(.5)
 # y = np.array(y)
 # crossvalidationCNN(x, y, 4)
 #plotNumbers(x_train)
-train, test = crossvalidationCNN(x_train, y_train, 10)
+train, test, ran, change = crossvalidationCNN(x_train, y_train, 10)
 train = get_averages(train)
 test = get_averages(test)
-plotTrainTestPerformance(train, test, 'epochs')
+plotTrainTestPerformance(train, test, change, )
 
 
 #data_analysis(x_train, y_train, x_test, y_test)
