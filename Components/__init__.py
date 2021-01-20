@@ -4,6 +4,7 @@ from Components.transformations import vector_to_matrix
 from Components.transformations import vectors_to_matrices
 from Components.transformations import matrices_to_tensors
 from Components.transformations import labels_to_vectors
+from Components.transformations import get_averages
 from Components.functions import data_analysis
-from Components.cnn import cnn
+from Components.cnn import train_cnn
 from Components.cnn import crossvalidationCNN
