@@ -58,25 +58,24 @@ def sequential_layers_conv():
     return layer
 
 
-def train_cnn(x, y, epochs=100, learningRate = 0.01, l2_weight_decay = 0.01, batch_size = 1):
+def train_cnn(x, y, epochs=100, learningRate = 0.01, l2_weight_decay = 0.01, batch_size = None):
     x, y = matrices_to_tensors(x, y)
     model = Net()
     model = model.float()
     optimizer = Adam(model.parameters(), lr=learningRate, weight_decay=l2_weight_decay)
     criterion = nn.CrossEntropyLoss()
     loss_list = []
-    # here you can choose the batch size (currently its set to how all images at once)
-    batch_num = int(x.shape[0]/batch_size)
+    #batch sizes are claculated and sorted, by defaut batchsize is entire dataset
+    if not batch_size or batch_size > x.shape[0]:
+        batch_size = x.shape[0]
+    batch_num = x.shape[0]/batch_size
     x = x.reshape(-1, batch_size, 1, 15, 16)
     y = y.reshape(-1, batch_size)
-    
-    #batch index
-    bi = 0
 
-    for epoch in range(int(epochs/batch_size)):
+    for epoch in range(0, epochs):
         # loop over the number of batches feeds in batch_size many images and performs backprob
         # then again and so on
-        for i in range(bi*batch_size,(bi+1)*batch_size):
+        for i in range(0, int(batch_num)):
             # Here we feed in training data and perform backprop according to the loss
             # Run the forward pass
             outputs = model.forward(x[i])
@@ -88,7 +87,6 @@ def train_cnn(x, y, epochs=100, learningRate = 0.01, l2_weight_decay = 0.01, bat
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-        bi += 1
     return model, loss_list
 
     
