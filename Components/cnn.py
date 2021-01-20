@@ -124,7 +124,19 @@ def crossvalidationCNN(train, labels, k):
     avg_acc_train = 0
     avg_acc_test = 0
     #lr = 0.01
-    wd = 0.001
+    wd = 0.021 #value extrapolated from 10 * 0.02 (value per iteration) + 0.001 (initial value)
+    fold = k-1
+    train_x, train_y, test_x, test_y = get_fold(folds_x, folds_y, fold)
+    results = cnn(train_x, train_y, test_x, test_y, 100, 0.01, wd)
+    accTrain.append(results[0])
+    accTest.append(results[1])
+    loss.append(results[2])
+    print('fold accuracy reading')
+    print('train:', np.mean(accTrain), 'test:', np.mean(accTest), '\n')
+
+
+# To be used if all k-fold cross-validation iterations want to be used. 
+"""
     for fold in range(0, k):
         print('fold:', fold+1, ', weight decay:', wd)
         train_x, train_y, test_x, test_y = get_fold(folds_x, folds_y, fold)
@@ -141,6 +153,7 @@ def crossvalidationCNN(train, labels, k):
     print('Average accuracy reading')
     print('train:', str(avg_acc_train/k), 'valid:', str(avg_acc_test/k))
     return accTrain, accTest, loss
+"""
 
 '''
 combines the split up folds into training and testing data. The choice of which fold
