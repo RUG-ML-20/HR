@@ -217,6 +217,8 @@ def crossvalidationCNN(x, y, k):
     stop = 100
     step = 1
 
+    wd = 0.021 #value extrapolated from 10 * 0.02 (value per iteration) + 0.001 (initial value)
+
     for m in range(start, stop + 1, step):# loop over given m settings
         print(m)
         acc_train = list()
@@ -255,14 +257,15 @@ def split_check(n, k):
         return k
     
     u = 1
-    while n % k + u != 0:
-        if n % k - u != 0:
-            nk = k - u
-        if n % k + u != 0:
-            nk = k + u
-            break
+    while n % (k + u) != 0 and (k - u < 2 or n % (k - u) != 0):
         u += 1
-    print(f'Warning: current k: {k} for kfold crossvalidation would not divide folds correctly')
+
+    if n % (k + u) == 0:
+        nk = k + u
+    elif n % (k - u) == 0:
+        nk = k - u
+
+    print(f'Warning: current K={k} for K-fold cross-validation would not divide folds correctly')
     print(f'the new k: {nk} was chosen instead')
     return nk
 
