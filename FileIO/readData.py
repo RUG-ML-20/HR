@@ -11,31 +11,38 @@ def shuffling(X_train, y_train):
 def createLabels(data):
     labels = list()
     class_label = 0
-    for i in range(1, len(data)+1):
+    for i in range(1, len(data) + 1):
         labels.append(class_label)
         if i % 200 == 0 and i != 0:
             class_label += 1
     return labels
 
+
 def distribute_digits_split(data_X, data_Y, split):
     split = int(200 * split)
     train_x = []
-    train_y =[]
+    train_y = []
     test_x = []
     test_y = []
-    for i in range(0,10):
-        train_x.append(data_X[i*200: i*200+split])
-        train_y.append(data_Y[i*200: i*200+split])
-        test_x.append(data_X[i*200+split: i*200+200])
-        test_y.append(data_Y[i*200+split: i*200+200])
+    for i in range(0, 10):
+        train_x.append(data_X[i * 200: i * 200 + split])
+        train_y.append(data_Y[i * 200: i * 200 + split])
+        test_x.append(data_X[i * 200 + split: i * 200 + 200])
+        test_y.append(data_Y[i * 200 + split: i * 200 + 200])
 
-    return np.array(train_x).reshape(-1,240), np.array(train_y).flatten(), \
-           np.array(test_x).reshape(-1,240), np.array(test_y).flatten()
+    return np.array(train_x).reshape(-1, 240), np.array(train_y).flatten(), \
+           np.array(test_x).reshape(-1, 240), np.array(test_y).flatten()
+
 
 # load a split data
-def load(split=.5):
+def load(split=.5, plot=False):
     file = "data/mfeat-pix.txt"
     data = np.loadtxt(file, dtype='i', delimiter=',')
+
+    if plot:
+        from Visualisation.plots import plotNumbers
+        plotNumbers(data)
+
     # store labels for corresponding digits and shuffle
     labels = np.array(createLabels(data))
     train_x, train_y, test_x, test_y = distribute_digits_split(data, labels, split)

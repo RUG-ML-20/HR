@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 
+
 # returns the matrix representation of a vector and if plot = True plots the digit
 def vector_to_matrix(pic):
     picmatreverse = np.zeros((15, 16))
@@ -21,12 +22,14 @@ def vectors_to_matrices(vectors):
         matrices.append(vector_to_matrix(vector))
     return np.array(matrices)
 
+
 def labels_to_vectors(labels):
     vectors = np.zeros([len(labels), 10], dtype='int')
     for i in range(0, len(labels)):
         vectors[i, labels[i]] = 1
 
     return torch.from_numpy(vectors)
+
 
 def matrices_to_tensors(x, y):
     x = x.reshape(x.shape[0], 1, 15, 16)
@@ -36,9 +39,9 @@ def matrices_to_tensors(x, y):
     x = x.float()
     return x, y
 
+
 def get_averages(arr):
     new_list = list()
     for res in arr:
         new_list.append(np.mean(res))
     return new_list
-

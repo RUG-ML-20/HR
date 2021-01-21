@@ -7,6 +7,7 @@ from Visualisation import plotTrainTestPerformance
 import numpy as np
 import decimal
 
+
 ## Architecture
 class Net(nn.Module):
     def __init__(self):
@@ -15,11 +16,11 @@ class Net(nn.Module):
         # sets the sequential layers
         self.sequential_layers_conv = sequential_layers_conv()
         # set a random image to feed into convs to calculate output dim
-        x = torch.randn(15,16).view(-1,1,15,16)
+        x = torch.randn(15, 16).view(-1, 1, 15, 16)
         self.convs(x)
         # here you could print how many units there are before the linear layers (might be helpful)
-        #print('to_linear')
-        #print(self.to_linear)
+        # print('to_linear')
+        # print(self.to_linear)
         self.linear = sequential_layers_linear(self.to_linear)
 
     def convs(self, x):
@@ -47,29 +48,29 @@ def sequential_layers_linear(to_linear):
 # specify the network architecture here
 def sequential_layers_conv():
     layer = nn.Sequential(
-            nn.Conv2d(1, 6, kernel_size=(3,4), stride=1, padding=1),
-            nn.BatchNorm2d(6),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(6, 10, kernel_size=4, stride=1, padding=0),
-            nn.BatchNorm2d(10),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2, stride=2)
-            )
+        nn.Conv2d(1, 6, kernel_size=(3, 4), stride=1, padding=1),
+        nn.BatchNorm2d(6),
+        nn.ReLU(inplace=True),
+        nn.Conv2d(6, 10, kernel_size=4, stride=1, padding=0),
+        nn.BatchNorm2d(10),
+        nn.ReLU(inplace=True),
+        nn.MaxPool2d(kernel_size=2, stride=2)
+    )
 
     return layer
 
 
-def train_cnn(x, y, epochs=65, learningRate = 0.01, l2_weight_decay = 0.01, batch_size = None):
+def train_cnn(x, y, epochs=65, learningRate=0.01, l2_weight_decay=0.01, batch_size=None):
     x, y = matrices_to_tensors(x, y)
     model = Net()
     model = model.float()
     optimizer = Adam(model.parameters(), lr=learningRate, weight_decay=l2_weight_decay)
     criterion = nn.CrossEntropyLoss()
     loss_list = []
-    #batch sizes are claculated and sorted, by defaut batchsize is entire dataset
+    # batch sizes are claculated and sorted, by defaut batchsize is entire dataset
     if not batch_size or batch_size > x.shape[0]:
         batch_size = x.shape[0]
-    batch_num = x.shape[0]/batch_size
+    batch_num = x.shape[0] / batch_size
     x = x.reshape(-1, batch_size, 1, 15, 16)
     y = y.reshape(-1, batch_size)
 
@@ -90,15 +91,15 @@ def train_cnn(x, y, epochs=65, learningRate = 0.01, l2_weight_decay = 0.01, batc
             optimizer.step()
     return model, loss_list
 
-    
 
 def eval_cnn(model, x, y):
-    x,y = matrices_to_tensors(x,y)
+    x, y = matrices_to_tensors(x, y)
     output = model.forward(x)
     total = y.size(0)
     _, predicted = torch.max(output.data, 1)
     correct = (predicted == y).sum().item()
     return correct / total
+
 
 # def train_cnn(train_x, train_y, epochs=100, learningRate = 0.01, l2_weight_decay = 0.01, batch_size = 1):
 #     train_x, train_y, test_x, test_y = matrices_to_tensors(train_x, train_y, test_x, test_y)
@@ -146,11 +147,8 @@ def eval_cnn(model, x, y):
 #         _, predicted = torch.max(outputs_test.data, 1)
 #         correct = (predicted == test_y).sum().item()
 #         acc_list_test.append(correct / total)
-    
+
 #     return model
-
-
-
 
 
 # def run_model(model, data, epochs, learningRate, l2_weight_decay, batch_size):
@@ -199,7 +197,7 @@ def eval_cnn(model, x, y):
 #     return acc_list_train, acc_list_test, loss_list
 
 def crossvalidationCNN(x, y, k):
-    #setup the kfold split
+    # setup the kfold split
     total = x.shape[0]
     k = split_check(total, k)
     bin_size = int(total / k)
@@ -207,62 +205,61 @@ def crossvalidationCNN(x, y, k):
     folds_y = np.array(np.split(y, k))
     acc_train_m = list()
     acc_test_m = list()
-    loss = list()
+    m_list = list()
 
-    #define m range in this case m corresponds with epochs
-    #to change what is going to vary with m, mention in the train_cnn function 
-    #eg. learning_rate = m, batch_size = m ...
-    #also declare whay you change for the graph legend
+    # define m range in this case m corresponds with epochs
+    # to change what is going to vary with m, mention in the train_cnn function
+    # eg. learning_rate = m, batch_size = m ...
+    # also declare what you change for the graph legend
     change = 'learning rate'
     start = 0.001
     stop = 0.01
-    step = 10 # WARNING if the start stop step are floats, then step has the be the number of elemnts you want to split the range into 
-              # for instance, if start is 0.001 and you want to get to 0.01 with a step of 0.01 then set step to 10. i know its annoying
+    step = 0.001
 
-    if isinstance(step, float):
-        ran = np.linspace(start, stop, step)
-    else: 
-        ran = range(start, stop, step)
-
-    wd = 0.021 #value extrapolated from 10 * 0.02 (value per iteration) + 0.001 (initial value)
-
-    for m in ran:# loop over given m settings
-        print(m)
+    for m in np.arange(start, stop, step):  # loop over given m settings
+        print(change, '=', m)
         acc_train = list()
         acc_test = list()
-        for fold in range(0, k): # train a new model for each fold and for each m
+        for fold in range(0, k):  # train a new model for each fold and for each m
             train_x, train_y, test_x, test_y = get_fold(folds_x, folds_y, fold)
-            model, loss = train_cnn(train_x, train_y, learningRate= m, epochs= 20)
+            model, loss = train_cnn(train_x, train_y, learningRate=m, epochs=20, l2_weight_decay=0.01)
             acc_train.append(eval_cnn(model, train_x, train_y))
             acc_test.append(eval_cnn(model, test_x, test_y))
-        acc_train_m.append(acc_train)
-        acc_test_m.append(acc_test)
-    return acc_train_m, acc_test_m, ran, change
+        acc_train_m.append(np.mean(acc_train))
+        acc_test_m.append(np.mean(acc_test))
+        m_list.append(m)
+    return acc_train_m, acc_test_m, m_list, change
+
 
 '''
 combines the split up folds into training and testing data. The choice of which fold
 is used for testing data is indicated by the index n
 '''
-def get_fold(folds_x, folds_y, n): 
+
+
+def get_fold(folds_x, folds_y, n):
     test_x = folds_x[n]
     test_y = folds_y[n]
     temp = np.repeat(True, folds_x.shape[0])
     temp[n] = False
     train_x = folds_x[temp]
     train_y = folds_y[temp]
-    train_x = np.concatenate(train_x, axis = 0)
-    train_y = np.concatenate(train_y, axis = 0)
+    train_x = np.concatenate(train_x, axis=0)
+    train_y = np.concatenate(train_y, axis=0)
     return train_x, train_y, test_x, test_y
+
 
 '''
 helper function to make sure data can be split up into k folds without caising shape issues,
 if there is an issue, the closest number to k that will not cause problems will be chosen
 with a preference to the higher number.
 '''
+
+
 def split_check(n, k):
     if n % k == 0:
         return k
-    
+
     u = 1
     while n % (k + u) != 0 and (k - u < 2 or n % (k - u) != 0):
         u += 1
@@ -276,9 +273,8 @@ def split_check(n, k):
     print(f'the new k: {nk} was chosen instead')
     return nk
 
-def float_range(start, stop, step):
-  while start < stop:
-    yield float(start)
-    start += decimal.Decimal(step)
 
-    
+def float_range(start, stop, step):
+    while start < stop:
+        yield float(start)
+        start += decimal.Decimal(step)
