@@ -9,10 +9,11 @@ def plotNumbers(data):
         for j in range(0, 10):
             pic = np.array(data[200 * (i) + j][:])
             picmat = vector_to_matrix(pic)
-            ax[i, j].pcolor(picmat, cmap='Greys')
+            ax[i, j].pcolor(picmat, cmap='gist_gray')
             ax[i, j].axes.xaxis.set_visible(False)
             ax[i, j].axes.yaxis.set_visible(False)
     plt.show()
+    fig.savefig('digits.png')
 
 
 def plotTrainTestPerformance(train, test, change, x_values=[]):
@@ -27,4 +28,5 @@ def plotTrainTestPerformance(train, test, change, x_values=[]):
     plt.ylabel('Accuracy')
     plt.legend(['Training', 'Testing'], loc=4)
     plt.show()
+    plt.savefig('crossval_'+change+'.png')
     pass

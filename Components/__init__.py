@@ -7,4 +7,5 @@ from Components.transformations import labels_to_vectors
 from Components.transformations import get_averages
 from Components.functions import data_analysis
 from Components.cnn import train_cnn
+from Components.cnn import eval_cnn
 from Components.cnn import crossvalidationCNN

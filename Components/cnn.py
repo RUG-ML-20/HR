@@ -8,7 +8,7 @@ import numpy as np
 import decimal
 
 
-## Architecture
+# Architecture
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -56,11 +56,10 @@ def sequential_layers_conv():
         nn.ReLU(inplace=True),
         nn.MaxPool2d(kernel_size=2, stride=2)
     )
-
     return layer
 
 
-def train_cnn(x, y, epochs=65, learningRate=0.01, l2_weight_decay=0.01, batch_size=None):
+def train_cnn(x, y, epochs=65, learningRate=0.01, l2_weight_decay=0.07, batch_size=None):
     x, y = matrices_to_tensors(x, y)
     model = Net()
     model = model.float()
@@ -211,9 +210,9 @@ def crossvalidationCNN(x, y, k):
     # to change what is going to vary with m, mention in the train_cnn function
     # eg. learning_rate = m, batch_size = m ...
     # also declare what you change for the graph legend
-    change = 'learning rate'
+    change = 'l2 weight decay'
     start = 0.001
-    stop = 0.01
+    stop = 0.015
     step = 0.001
 
     for m in np.arange(start, stop, step):  # loop over given m settings
@@ -222,7 +221,7 @@ def crossvalidationCNN(x, y, k):
         acc_test = list()
         for fold in range(0, k):  # train a new model for each fold and for each m
             train_x, train_y, test_x, test_y = get_fold(folds_x, folds_y, fold)
-            model, loss = train_cnn(train_x, train_y, learningRate=m, epochs=20, l2_weight_decay=0.01)
+            model, loss = train_cnn(train_x, train_y, learningRate=m, epochs=30, l2_weight_decay=0.007)
             acc_train.append(eval_cnn(model, train_x, train_y))
             acc_test.append(eval_cnn(model, test_x, test_y))
         acc_train_m.append(np.mean(acc_train))
