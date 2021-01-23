@@ -16,6 +16,24 @@ def plotNumbers(data):
     fig.savefig('digits.png')
 
 
+def plotWrongDigits(x, predicted, y):
+    numDigits = len(x)
+    fig, ax = plt.subplots(5, 10, sharex='col', sharey='row')
+    for i in range(50):
+        col = i % 10
+        row = int(i/10)
+        if i < numDigits:
+            pic = np.array(x[i][:])
+            ax[row, col].pcolor(pic, cmap='gist_gray')
+            ax[row, col].axes.xaxis.set_ticks([])
+            ax[row, col].set_xlabel('pred: '+str(predicted[i])+'\nlabel: '+str(y[i]))
+            ax[row, col].axes.yaxis.set_visible(False)
+        else:
+            ax[row, col].axis('off')
+    plt.tight_layout()
+    plt.show()
+
+
 def plotTrainTestPerformance(train, test, change, x_values=[]):
     if not x_values:
         plt.plot(train)
@@ -28,5 +46,5 @@ def plotTrainTestPerformance(train, test, change, x_values=[]):
     plt.ylabel('Accuracy')
     plt.legend(['Training', 'Testing'], loc=4)
     plt.show()
-    plt.savefig('crossval_'+change+'.png')
+    plt.savefig('crossval_' + change + '.png')
     pass

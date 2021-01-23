@@ -32,7 +32,7 @@ def labels_to_vectors(labels):
 
 
 def matrices_to_tensors(x, y):
-    x = x.reshape(x.shape[0], 1, 15, 16)
+    x = x.reshape(x.shape[0], 1, 16, 15)
     x = torch.from_numpy(x)
     y = y.astype(int)
     y = torch.from_numpy(y)
