@@ -34,7 +34,7 @@ def plotWrongDigits(x, predicted, y, filename, num):
     plt.savefig(f"{filename}/plot_{num}.jpg", bbox_inches='tight', dpi=150)
 
 
-def plotTrainTestPerformance(train, test, change, x_values=[]):
+def plotTrainTestPerformance(train, test, change,filename, x_values=[]):
     if not x_values:
         plt.plot(train)
         plt.plot(test)
@@ -45,6 +45,4 @@ def plotTrainTestPerformance(train, test, change, x_values=[]):
     plt.xlabel(change)
     plt.ylabel('Accuracy')
     plt.legend(['Training', 'Testing'], loc=4)
-    plt.show()
-    plt.savefig('crossval_' + change + '.png')
-    pass
+    plt.savefig(f'{filename}/crossValidationPlot.png')

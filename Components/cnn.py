@@ -127,18 +127,34 @@ def crossvalidationCNN(x, y, k):
     # to change what is going to vary with m, mention in the train_cnn function
     # eg. learning_rate = m, batch_size = m ...
     # also declare what you change for the graph legend
-    change = 'l2 regularization'
-    start = 0.01
-    stop = 0.008
-    step = 0.001
+    # type 'architecture' if changing architecture, make there only be 1 step 
+    change = 'architecture'
+    start = 0
+    stop = 1
+    step = 1
 
+
+    if change == 'architecture':
+        append = True
+    else:
+        append = False
+
+
+    # new folder for each new run, except if ran size is 1
+    # file with list of ave accuracies
+    # plot 
+    num = get_run_number('data/numberOfOptimisations.txt', append)
+    print(num)
+    newfile = f'data/optimisations/opt_{num}'
+    os.makedirs(newfile,exist_ok = True)
     for m in np.arange(start, stop, step):  # loop over given m settings
-        print(change, '=', m)
+        mFile = f'{newfile}/{change}: {m}'
+        os.makedirs(mFile, exist_ok= True)
         acc_train = list()
         acc_test = list()
         for fold in range(0, k):  # train a new model for each fold and for each m
             train_x, train_y, test_x, test_y = get_fold(folds_x, folds_y, fold)
-            model, loss = train_cnn(train_x, train_y, learningRate=0.007, epochs=30, l2_weight_decay=m)
+            model, loss = train_cnn(train_x, train_y, learningRate=0.007, epochs=1, l2_weight_decay=m)
             acc, _, _, _ = eval_cnn(model, train_x, train_y)
             acc_train.append(acc)
             acc, _, _, _ = eval_cnn(model, test_x, test_y)
@@ -146,7 +162,10 @@ def crossvalidationCNN(x, y, k):
         acc_train_m.append(np.mean(acc_train))
         acc_test_m.append(np.mean(acc_test))
         m_list.append(m)
-    return acc_train_m, acc_test_m, m_list, change
+        save_model(mFile, model,  acc_test_m[-1], append)
+        save_accuracies(mFile, acc_test, append)
+
+    return acc_train_m, acc_test_m, m_list, change, newfile, append
 
 
 '''
@@ -198,8 +217,8 @@ def float_range(start, stop, step):
         start += decimal.Decimal(step)
 
 def test_model(x_train, y_train, x_test, y_test):
-    num = get_run_number()
-    new_file = f"data/test_run_{num}"
+    num = get_run_number('data/numberOfRuns.txt')
+    new_file = f"data/test_runs/test_run_{num}"
     plots_file = f'{new_file}/error_plots'
     os.mkdir(new_file)
     os.mkdir(plots_file)

@@ -8,10 +8,11 @@ import sys
 x_train, y_train, x_test, y_test = load(.5, plot=False)
 
 # cross-validation
-'''
-train, test, m, change = crossvalidationCNN(x_train, y_train, 10)
-plotTrainTestPerformance(train, test, change, x_values=m)
-'''
+
+train, test, m, change, saveLocation, append = crossvalidationCNN(x_train, y_train, 10)
+if not append:
+    plotTrainTestPerformance(train, test, change, saveLocation, x_values=m )
+
 
 # show division of data set in training vs testing
 # data_analysis(x_train, y_train, x_test, y_test)
@@ -33,5 +34,5 @@ plotTrainTestPerformance(trainingError, testingError, 'Principal Components')
 
 # Train and test several models for average testing accuracy
 
-test_model(x_train,y_train, x_test, y_test)
+#test_model(x_train,y_train, x_test, y_test)
 
