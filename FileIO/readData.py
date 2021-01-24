@@ -1,4 +1,7 @@
 import numpy as np
+import sys
+import re
+import matplotlib.pyplot as plt
 
 
 # shuffles the dataset randomly, so the order of digits is different every time
@@ -51,3 +54,24 @@ def load(split=.5, plot=False):
     test_x, test_y = shuffling(test_x, test_y)
 
     return train_x, train_y, test_x, test_y
+
+
+def save_model(location, model, accuracy):
+    sys.stdout = open(f'{location}/summary.txt', "w")
+    print(f"model accuracy: {accuracy}")
+    print(model)
+    sys.stdout.close()
+
+def get_run_number():
+    filename = "data/numberOfRuns.txt"
+    with open(filename, 'r+') as f:
+        num = f.readline()
+        num = re.sub(num, f"{int(num)+1}", num)
+        f.seek(0)
+        f.write(num)
+        f.truncate()
+    return int(num)
+
+def save_accuracies(filename, arr):
+    with open(f"{filename}/accuracies.txt", "w") as output:
+        output.write(str(arr))

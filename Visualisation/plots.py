@@ -16,7 +16,7 @@ def plotNumbers(data):
     fig.savefig('digits.png')
 
 
-def plotWrongDigits(x, predicted, y):
+def plotWrongDigits(x, predicted, y, filename, num):
     numDigits = len(x)
     fig, ax = plt.subplots(5, 10, sharex='col', sharey='row')
     for i in range(50):
@@ -31,7 +31,7 @@ def plotWrongDigits(x, predicted, y):
         else:
             ax[row, col].axis('off')
     plt.tight_layout()
-    plt.show()
+    plt.savefig(f"{filename}/plot_{num}.jpg", bbox_inches='tight', dpi=150)
 
 
 def plotTrainTestPerformance(train, test, change, x_values=[]):

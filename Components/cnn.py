@@ -2,10 +2,12 @@ import torch
 from torch.autograd import Variable
 import torch.nn as nn
 from torch.optim import Adam, SGD
-from Components import matrices_to_tensors, labels_to_vectors
-from Visualisation import plotTrainTestPerformance
+from Components import matrices_to_tensors, labels_to_vectors, vectors_to_matrices
+from Visualisation import plotTrainTestPerformance, plotWrongDigits
+from FileIO import *
 import numpy as np
 import decimal
+import os
 
 
 # Architecture
@@ -194,3 +196,22 @@ def float_range(start, stop, step):
     while start < stop:
         yield float(start)
         start += decimal.Decimal(step)
+
+def test_model(x_train, y_train, x_test, y_test):
+    num = get_run_number()
+    new_file = f"data/test_run_{num}"
+    plots_file = f'{new_file}/error_plots'
+    os.mkdir(new_file)
+    os.mkdir(plots_file)
+    #i want to save the model summary, the images, and the accuracies
+    # Train and test several models for average testing accuracy
+    x_train, x_test = vectors_to_matrices(x_train), vectors_to_matrices(x_test)
+    accuracy = []
+    for i in range(5):
+        model, loss = train_cnn(x_train, y_train)  
+        acc_test, wrong_x, wrong_predicted, wrong_y = eval_cnn(model, x_test, y_test)
+        accuracy.append(acc_test)
+        print('model', i+1, 'accuracy =', acc_test)
+        plotWrongDigits(wrong_x, wrong_predicted, wrong_y, plots_file, i)
+    save_model(new_file, model, sum(accuracy)/len(accuracy))
+    save_accuracies(new_file,accuracy)

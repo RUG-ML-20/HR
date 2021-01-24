@@ -9,3 +9,4 @@ from Components.functions import data_analysis
 from Components.cnn import train_cnn
 from Components.cnn import eval_cnn
 from Components.cnn import crossvalidationCNN
+from Components.cnn import test_model
