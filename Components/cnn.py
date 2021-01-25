@@ -33,10 +33,14 @@ class Net(nn.Module):
 
         return x
 
-    def forward(self, x):
+    def forward(self, x, tSNE_list=False):
         x = self.convs(x)
         x = x.view(-1, self.to_linear)
+        if tSNE_list:
+            feature_vectors = x
         x = self.linear(x)
+        if tSNE_list:
+            return x, feature_vectors
         return x
 
 
@@ -50,7 +54,7 @@ def sequential_layers_linear(to_linear):
 # specify the network architecture here
 def sequential_layers_conv():
     layer = nn.Sequential(
-        nn.Conv2d(1, 6, kernel_size=(3, 4), stride=1, padding=1),
+        nn.Conv2d(1, 6, kernel_size=(4, 3), stride=1, padding=1),
         nn.BatchNorm2d(6),
         nn.ReLU(inplace=True),
         nn.Conv2d(6, 10, kernel_size=4, stride=1, padding=0),
@@ -61,7 +65,7 @@ def sequential_layers_conv():
     return layer
 
 
-def train_cnn(x, y, epochs=65, learningRate=0.008, l2_weight_decay=0.01, batch_size=None):
+def train_cnn(x, y, epochs=65, learningRate=0.008, l2_weight_decay=0.0002, batch_size=20):
     x, y = matrices_to_tensors(x, y)
     model = Net()
     model = model.float()
@@ -93,9 +97,12 @@ def train_cnn(x, y, epochs=65, learningRate=0.008, l2_weight_decay=0.01, batch_s
     return model, loss_list
 
 
-def eval_cnn(model, x, y):
+def eval_cnn(model, x, y, tSNE_list=False):
     x, y = matrices_to_tensors(x, y)
-    output = model.forward(x)
+    if tSNE_list:
+        output, feature_vectors = model.forward(x, tSNE_list=True)
+    else:
+        output = model.forward(x)
     total = y.size(0)
     _, predicted = torch.max(output.data, 1)
     correct = 0
@@ -109,6 +116,8 @@ def eval_cnn(model, x, y):
             wrong_digits.append(x[i][0].tolist())
             wrong_pred.append(predicted[i].item())
             wrong_y.append(y[i].item())
+    if tSNE_list:
+        return correct / total, wrong_digits, wrong_pred, wrong_y, feature_vectors
     return correct / total, wrong_digits, wrong_pred, wrong_y
 
 
