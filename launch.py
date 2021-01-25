@@ -1,4 +1,5 @@
 import numpy as np
+import random as rd
 from FileIO import load
 from Components import *
 from Visualisation import plotNumbers, plotTrainTestPerformance, plotWrongDigits, tsne_plots
@@ -7,7 +8,8 @@ import sys
 # loading data
 x_train, y_train, x_test, y_test = load(.5, plot=False)
 
-
+# baseline model with random parameters based on lit (blog) research
+print(randomParameters())
 
 # print tSNE plots
 

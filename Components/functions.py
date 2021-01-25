@@ -62,3 +62,19 @@ def count_occurrences(ys):
         occurrences[int(y)] += 1
 
     return occurrences
+
+
+def randomParameters():
+    epochs = [50, 60, 70, 80, 90, 100]
+    epoch = rd.choice(epochs)
+
+    learningRates = [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1]
+    learningRate = rd.choice(learningRates)
+
+    l2s = [0.01 + x for x in range(40)] # not sure about this parameter 
+    l2 = rd.choice(l2s)
+
+    batchSizes = [8, 16, 32, 64, 128, 256]
+    batchSize = rd.choice(batchSizes)
+
+    return epoch, learningRate, l2, batchSize
