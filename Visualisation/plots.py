@@ -50,11 +50,10 @@ def plotTrainTestPerformance(train, test, change,filename, x_values=[]):
 
 
 def tsne_plots(x_test, y_test, feature_vectors):
-    tSNE = TSNE(n_components=2, perplexity=30, random_state=30)
+    tSNE = TSNE(n_components=2, perplexity=40, random_state=5, n_iter=2000)
     embed_digits = tSNE.fit_transform(x_test)
     embed_digits_cnn = tSNE.fit_transform(feature_vectors.detach().numpy())
-    print(embed_digits.shape, embed_digits_cnn.shape)
-    print(embed_digits[0], embed_digits[1])
+
     fig, axes = plt.subplots(1,2)
     fig.suptitle('Embedding of digits without preprocessing and after the convolutional layers')
     sns.scatterplot(x=embed_digits[:, 0], y=embed_digits[:, 1], hue=(y_test+1), palette='tab10', ax=axes[0])

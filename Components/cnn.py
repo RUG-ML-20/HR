@@ -21,8 +21,8 @@ class Net(nn.Module):
         x = torch.randn(16, 15).view(-1, 1, 16, 15)
         self.convs(x)
         # here you could print how many units there are before the linear layers (might be helpful)
-        # print('to_linear')
-        # print(self.to_linear)
+        #print('to_linear')
+        #print(self.to_linear)
         self.linear = sequential_layers_linear(self.to_linear)
 
     def convs(self, x):
