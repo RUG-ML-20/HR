@@ -10,4 +10,6 @@ from Components.cnn import train_cnn
 from Components.cnn import crossvalidationCNN
 from Components.cnn import eval_cnn
 from Components.cnn import test_model
+from Components.cnn import print_layers
 from Components.functions import randomParameters
+from Visualisation.plots import plot_hidden_layers

@@ -1,36 +1,48 @@
 import torch
 from torch.autograd import Variable
 import torch.nn as nn
+from torch.functional import F
 from torch.optim import Adam, SGD
 from Components import matrices_to_tensors, labels_to_vectors, vectors_to_matrices
-from Visualisation import plotTrainTestPerformance, plotWrongDigits
+from Visualisation import plotTrainTestPerformance, plotWrongDigits, plot_hidden_layers
 from FileIO import *
 import numpy as np
 import decimal
 import os
+import matplotlib as plt
 
 
 # Architecture
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(self, print=False):
         super(Net, self).__init__()
         self.to_linear = None
-        # sets the sequential layers
-        self.sequential_layers_conv = sequential_layers_conv()
+
+        # Architecture is defined here now
+        self.conv_layer_1 = nn.Conv2d(1, 6, kernel_size=(4, 3), stride=1, padding=1)
+        self.batch_norm_1 = nn.BatchNorm2d(6)
+        self.relu1 = nn.ReLU(inplace=True)
+        self.conv_layer_2 = nn.Conv2d(6, 10, kernel_size=4, stride=1, padding=0)
+        self.batch_norm_2 = nn.BatchNorm2d(10)
+        self.relu2 = nn.ReLU(inplace=True)
+        self.max_pool = nn.MaxPool2d(kernel_size=2, stride=2)
+
         # set a random image to feed into convs to calculate output dim
         x = torch.randn(16, 15).view(-1, 1, 16, 15)
         self.convs(x)
-        # here you could print how many units there are before the linear layers (might be helpful)
-        #print('to_linear')
-        #print(self.to_linear)
         self.linear = sequential_layers_linear(self.to_linear)
 
     def convs(self, x):
-        x = self.sequential_layers_conv(x)
+        x = self.conv_layer_1(x)
+        x = self.batch_norm_1(x)
+        x = self.relu1(x)
+        x = self.conv_layer_2(x)
+        x = self.batch_norm_2(x)
+        x = self.relu2(x)
+        x = self.max_pool(x)
         # calculate how many output units there will be after the convolutional layers
         if self.to_linear is None:
             self.to_linear = x.shape[1] * x.shape[2] * x.shape[3]
-
         return x
 
     def forward(self, x, tSNE_list=False):
@@ -43,6 +55,19 @@ class Net(nn.Module):
             return x, feature_vectors
         return x
 
+    def forward_layer_visualization(self, x):
+        x = self.conv_layer_1(x)
+        plot_hidden_layers(x, 6, "After 1st convolutional layer")
+        x = self.batch_norm_1(x)
+        x = self.relu1(x)
+        plot_hidden_layers(x, 6, "After 1st relu operation")
+        x = self.conv_layer_2(x)
+        plot_hidden_layers(x, 10, "After 2nd convolutional layer")
+        x = self.batch_norm_2(x)
+        x = self.relu2(x)
+        plot_hidden_layers(x, 10, "After 2nd relu operation")
+        x = self.max_pool(x)
+        plot_hidden_layers(x, 10, "After max-pool layer")
 
 # specifies the linear layers with the input being calculated before (to_linear)
 def sequential_layers_linear(to_linear):
@@ -52,6 +77,7 @@ def sequential_layers_linear(to_linear):
 
 
 # specify the network architecture here
+# redundant now
 def sequential_layers_conv():
     layer = nn.Sequential(
         nn.Conv2d(1, 6, kernel_size=(4, 3), stride=1, padding=1),
@@ -60,7 +86,7 @@ def sequential_layers_conv():
         nn.Conv2d(6, 10, kernel_size=4, stride=1, padding=0),
         nn.BatchNorm2d(10),
         nn.ReLU(inplace=True),
-        nn.MaxPool2d(kernel_size=2, stride=2)
+        nn.MaxPool2d(kernel_size=2, stride=2),
     )
     return layer
 
@@ -96,6 +122,13 @@ def train_cnn(x, y, epochs=65, learningRate=0.008, l2_weight_decay=0.0002, batch
             optimizer.step()
     return model, loss_list
 
+def print_layers(model, x, y):
+    #x, _ = matrices_to_tensors(x, y)
+    x = x.reshape(1, 1, 16, 15)
+    x = torch.from_numpy(x)
+    x = x.float()
+    print(y)
+    output = model.forward_layer_visualization(x)
 
 def eval_cnn(model, x, y, tSNE_list=False):
     x, y = matrices_to_tensors(x, y)

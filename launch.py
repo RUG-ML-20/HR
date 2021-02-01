@@ -9,14 +9,17 @@ import sys
 x_train, y_train, x_test, y_test = load(.5, plot=False)
 
 # baseline model with random parameters based on lit (blog) research
-print(randomParameters())
+#print(randomParameters())
 
 # print tSNE plots
-
+#test_model(x_train, y_train, x_test, y_test)
 model, _ = train_cnn(x_train, y_train)
-acc,_,_,_, feature_vectors = eval_cnn(model, x_test, y_test, tSNE_list=True)
+acc,_,_,_ = eval_cnn(model, x_test, y_test, tSNE_list=False)
 print(acc)
-tsne_plots(x_test, y_test, feature_vectors)
+print_layers(model, x_test[5], y_test[5])
+# acc,_,_,_, feature_vectors = eval_cnn(model, x_test, y_test, tSNE_list=True)
+# print(acc)
+# tsne_plots(x_test, y_test, feature_vectors)
 
 # cross-validation
 
