@@ -4,6 +4,20 @@ from Components.transformations import vector_to_matrix
 from sklearn.manifold import TSNE
 import seaborn as sns
 
+
+def plot_hidden_layers(x, n_channels, layer):
+    data = x[0].detach().numpy()
+    fig, ax = plt.subplots(int(n_channels/2)+1, int(n_channels/2), sharex='col', sharey='row')
+    fig.suptitle(layer)
+    for j in range(0, int(n_channels/2)+1):
+        for i in range(0, int(n_channels/2)):
+            pic = data[i]
+            pic = np.flip(pic, 0)
+            ax[j, i].pcolor(pic, cmap='gist_gray')
+            ax[j, i].axes.xaxis.set_visible(False)
+            ax[j, i].axes.yaxis.set_visible(False)
+    plt.show()
+
 def plotNumbers(data):
     fig, ax = plt.subplots(10, 10, sharex='col', sharey='row')
     for i in range(0, 10):
@@ -54,10 +68,10 @@ def tsne_plots(x_test, y_test, feature_vectors):
     embed_digits = tSNE.fit_transform(x_test)
     embed_digits_cnn = tSNE.fit_transform(feature_vectors.detach().numpy())
 
-    fig, axes = plt.subplots(1,2)
+    fig, axes = plt.subplots(1, 2)
     fig.suptitle('Embedding of digits without preprocessing and after the convolutional layers')
-    sns.scatterplot(x=embed_digits[:, 0], y=embed_digits[:, 1], hue=(y_test+1), palette='tab10', ax=axes[0])
+    sns.scatterplot(x=embed_digits[:, 0], y=embed_digits[:, 1], hue=y_test+1, palette='tab10', ax=axes[0])
     axes[0].set_title("Digits without processing")
-    sns.scatterplot(x=embed_digits_cnn[:, 0], y=embed_digits_cnn[:, 1], hue=(y_test+1), palette='tab10', ax=axes[1])
+    sns.scatterplot(x=embed_digits_cnn[:, 0], y=embed_digits_cnn[:, 1], hue=y_test+1, palette='tab10', ax=axes[1])
     axes[1].set_title("Digits after convolutions")
     plt.show()

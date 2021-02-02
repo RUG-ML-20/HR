@@ -9,11 +9,22 @@ import sys
 x_train, y_train, x_test, y_test = load(.5, plot=False)
 
 # baseline model with random parameters based on lit (blog) research
+<<<<<<< HEAD
 # print(randomParameters())
 
 # # print tSNE plots
 
 # model, _ = train_cnn(x_train, y_train)
+=======
+#print(randomParameters())
+
+# print tSNE plots
+#test_model(x_train, y_train, x_test, y_test)
+model, _ = train_cnn(x_train, y_train)
+acc,_,_,_ = eval_cnn(model, x_test, y_test, tSNE_list=False)
+print(acc)
+print_layers(model, x_test[5], y_test[5])
+>>>>>>> a41ef0aa7bdaaf3371bc82cb62aeae9a87f9644c
 # acc,_,_,_, feature_vectors = eval_cnn(model, x_test, y_test, tSNE_list=True)
 # print(acc)
 # tsne_plots(x_test, y_test, feature_vectors)
