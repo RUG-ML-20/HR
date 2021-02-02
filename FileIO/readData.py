@@ -56,30 +56,23 @@ def load(split=.5, plot=False):
     return train_x, train_y, test_x, test_y
 
 
-def save_model(location, model, accuracy, append):
+def save_model(location, model, accuracy):
     sys.stdout = open(f'{location}/summary.txt', "w")
     print(f"model accuracy: {accuracy}")
     print(model)
     sys.stdout.close()
 
-def get_run_number(filename, append):
+def get_run_number(filename):
     with open(filename, 'r+') as f:
         num = f.readline()
-        if not append:
-            print('dddddd')
-            num = re.sub(num, f"{int(num)+1}", num)
+        num = re.sub(num, f"{int(num)+1}", num)
         f.seek(0)
         f.write(num)
         f.truncate()
     return int(num)
 
-def save_accuracies(filename, arr, append):
+def save_accuracies(filename, arr):
     array = arr
-    if append:
-        with open(f"{filename}/accuracies.txt", "a") as output:
-            output.write(str(array))
-            output.write('\n')
-    else:
-        with open(f"{filename}/accuracies.txt", "w") as output:
-            output.write(str(array))
+    with open(f"{filename}/accuracies.txt", "w") as output:
+        output.write(str(array))
     

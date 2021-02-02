@@ -1,4 +1,4 @@
-model accuracy: 0.9419999999999998
+model accuracy: 0.946
 Net(
   (conv_layer_1): Conv2d(1, 6, kernel_size=(4, 3), stride=(1, 1), padding=(1, 1))
   (batch_norm_1): BatchNorm2d(6, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)

@@ -49,18 +49,21 @@ def plotWrongDigits(x, predicted, y, filename, num):
     plt.savefig(f"{filename}/plot_{num}.jpg", bbox_inches='tight', dpi=150)
 
 
-def plotTrainTestPerformance(train, test, change,filename, x_values=[]):
+def plotTrainTestPerformance(train, test, change,filename = None, x_values=[]):
     if not x_values:
         plt.plot(train)
         plt.plot(test)
     else:
         plt.plot(x_values, train)
         plt.plot(x_values, test)
-    plt.title('Training vs Testing error')
+    plt.title('Training vs Testing accuracy')
     plt.xlabel(change)
     plt.ylabel('Accuracy')
     plt.legend(['Training', 'Testing'], loc=4)
-    plt.savefig(f'{filename}/crossValidationPlot.png')
+    if filename:
+        plt.savefig(f'{filename}/crossValidationPlot.png')
+    else:
+        plt.show()
 
 
 def tsne_plots(x_test, y_test, feature_vectors):

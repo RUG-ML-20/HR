@@ -3,8 +3,10 @@ import pandas as pd
 import random as rd
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import cross_val_score
 from sklearn import preprocessing
 import matplotlib.pyplot as plt
+
 
 
 def pca(train, test, nComponents=2, plot=False):
@@ -40,7 +42,10 @@ def linear_regression(train_x, train_y, test_x, test_y):
     testAccuracy = reg.score(test_x, test_y)
     return trainAccuracy, testAccuracy
 
-
+def crossval_LR(x,y):
+    lr = LinearRegression()
+    return np.mean(cross_val_score(lr, x, y, cv = 10))
+    
 def data_analysis(train_x, train_y, test_x, test_y):
     all_xs = np.concatenate((train_x, test_x), axis=0)
     all_ys = np.concatenate((train_y, test_y), axis=0)

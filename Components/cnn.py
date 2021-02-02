@@ -3,7 +3,7 @@ from torch.autograd import Variable
 import torch.nn as nn
 from torch.functional import F
 from torch.optim import Adam, SGD
-from Components import matrices_to_tensors, labels_to_vectors, vectors_to_matrices
+from Components import *
 from Visualisation import plotTrainTestPerformance, plotWrongDigits, plot_hidden_layers
 from FileIO import *
 import numpy as np
@@ -14,7 +14,7 @@ import matplotlib as plt
 
 # Architecture
 class Net(nn.Module):
-    def __init__(self, print=False):
+    def __init__(self, print = False):
         super(Net, self).__init__()
         self.to_linear = None
 
@@ -176,16 +176,10 @@ def crossvalidationCNN(x, y, k):
     step = 1
 
 
-    if change == 'architecture':
-        append = True
-    else:
-        append = False
-
-
     # new folder for each new run, except if ran size is 1
     # file with list of ave accuracies
     # plot 
-    num = get_run_number('data/numberOfOptimisations.txt', append)
+    num = get_run_number('data/numberOfOptimisations.txt')
     print(num)
     newfile = f'data/optimisations/opt_{num}'
     os.makedirs(newfile,exist_ok = True)
@@ -204,10 +198,10 @@ def crossvalidationCNN(x, y, k):
         acc_train_m.append(np.mean(acc_train))
         acc_test_m.append(np.mean(acc_test))
         m_list.append(m)
-        save_model(mFile, model,  acc_test_m[-1], append)
-        save_accuracies(mFile, acc_test, append)
+        save_model(mFile, model,  acc_test_m[-1])
+        save_accuracies(mFile, acc_test)
 
-    return acc_train_m, acc_test_m, m_list, change, newfile, append
+    return acc_train_m, acc_test_m, m_list, change, newfile
 
 
 '''
@@ -259,7 +253,7 @@ def float_range(start, stop, step):
         start += decimal.Decimal(step)
 
 def test_model(x_train, y_train, x_test, y_test):
-    num = get_run_number('data/numberOfRuns.txt', False)
+    num = get_run_number('data/numberOfRuns.txt')
     new_file = f"data/test_runs/test_run_{num}"
     plots_file = f'{new_file}/error_plots'
     os.makedirs(new_file, exist_ok= True)
@@ -274,5 +268,5 @@ def test_model(x_train, y_train, x_test, y_test):
         accuracy.append(acc_test)
         print('model', i+1, 'accuracy =', acc_test)
         plotWrongDigits(wrong_x, wrong_predicted, wrong_y, plots_file, i)
-    save_model(new_file, model, sum(accuracy)/len(accuracy), False)
-    save_accuracies(new_file,accuracy, False)
+    save_model(new_file, model, sum(accuracy)/len(accuracy))
+    save_accuracies(new_file,accuracy)
