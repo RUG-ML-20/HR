@@ -184,7 +184,7 @@ def crossvalidationCNN(x, y, k):
     newfile = f'data/optimisations/opt_{num}'
     os.makedirs(newfile,exist_ok = True)
     for m in np.arange(start, stop, step):  # loop over given m settings
-        mFile = f'{newfile}/{change}: {m}'
+        mFile = f'{newfile}/{change}_ {m}'
         os.makedirs(mFile, exist_ok= True)
         acc_train = list()
         acc_test = list()
