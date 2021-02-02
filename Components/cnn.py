@@ -226,20 +226,20 @@ def float_range(start, stop, step):
         start += decimal.Decimal(step)
 
 def test_model(x_train, y_train, x_test, y_test):
-    num = get_run_number('data/numberOfRuns.txt')
+    num = get_run_number('data/numberOfRuns.txt', False)
     new_file = f"data/test_runs/test_run_{num}"
     plots_file = f'{new_file}/error_plots'
-    os.mkdir(new_file)
-    os.mkdir(plots_file)
+    os.makedirs(new_file, exist_ok= True)
+    os.makedirs(plots_file, exist_ok= True)
     #i want to save the model summary, the images, and the accuracies
     # Train and test several models for average testing accuracy
     x_train, x_test = vectors_to_matrices(x_train), vectors_to_matrices(x_test)
     accuracy = []
     for i in range(5):
-        model, loss = train_cnn(x_train, y_train)  
+        model, loss = train_cnn(x_train, y_train, epochs=2)  
         acc_test, wrong_x, wrong_predicted, wrong_y = eval_cnn(model, x_test, y_test)
         accuracy.append(acc_test)
         print('model', i+1, 'accuracy =', acc_test)
         plotWrongDigits(wrong_x, wrong_predicted, wrong_y, plots_file, i)
-    save_model(new_file, model, sum(accuracy)/len(accuracy))
-    save_accuracies(new_file,accuracy)
+    save_model(new_file, model, sum(accuracy)/len(accuracy), False)
+    save_accuracies(new_file,accuracy, False)

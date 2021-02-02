@@ -9,20 +9,20 @@ import sys
 x_train, y_train, x_test, y_test = load(.5, plot=False)
 
 # baseline model with random parameters based on lit (blog) research
-print(randomParameters())
+# print(randomParameters())
 
-# print tSNE plots
+# # print tSNE plots
 
-model, _ = train_cnn(x_train, y_train)
-acc,_,_,_, feature_vectors = eval_cnn(model, x_test, y_test, tSNE_list=True)
-print(acc)
-tsne_plots(x_test, y_test, feature_vectors)
+# model, _ = train_cnn(x_train, y_train)
+# acc,_,_,_, feature_vectors = eval_cnn(model, x_test, y_test, tSNE_list=True)
+# print(acc)
+# tsne_plots(x_test, y_test, feature_vectors)
 
 # cross-validation
 
-#train, test, m, change, saveLocation, append = crossvalidationCNN(x_train, y_train, 10)
-#if not append:
-#    plotTrainTestPerformance(train, test, change, saveLocation, x_values=m )
+train, test, m, change, saveLocation, append = crossvalidationCNN(x_train, y_train, 10)
+if not append:
+   plotTrainTestPerformance(train, test, change, saveLocation, x_values=m)
 
 
 # show division of data set in training vs testing
@@ -45,5 +45,5 @@ plotTrainTestPerformance(trainingError, testingError, 'Principal Components')
 
 # Train and test several models for average testing accuracy
 
-#test_model(x_train,y_train, x_test, y_test)
+# test_model(x_train,y_train, x_test, y_test)
 
