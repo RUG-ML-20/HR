@@ -13,27 +13,27 @@ x_train, y_train, x_test, y_test = load(.5, plot=False)
 # data_analysis(x_train, y_train, x_test, y_test)
 
 # ---------linear regression----------
-print('linear regression scores')
-print(f'training: {crossval_LR(x_train,y_train)}')
-print(f'test: {crossval_LR(x_test,y_test)}')
-trainingError = list()
-testingError = list()
-print('PCA')
-print('finding optimal number of principal components')
-best = 0
-best_m = 0
-for m in tqdm(range(1, 200 + 1)):
-    pcaTrain, pcaTest, _ = pca(x_train, x_test, nComponents=m)
-    results_train = crossval_LR(pcaTrain, y_train)
-    results_test = crossval_LR(pcaTest, y_test) 
-    if results_train > best:
-        best = results_train
-        best_m = m
-    trainingError.append(results_train)
-    testingError.append(results_test)
-print(f'optimal number of principal components: {best_m}')
-print(f'score: {best}')
-plotTrainTestPerformance(trainingError, testingError, 'Principal Components')
+# print('linear regression scores')
+# print(f'training: {crossval_LR(x_train,y_train)}')
+# print(f'test: {crossval_LR(x_test,y_test)}')
+# trainingError = list()
+# testingError = list()
+# print('PCA')
+# print('finding optimal number of principal components')
+# best = 0
+# best_m = 0
+# for m in tqdm(range(1, 200 + 1)):
+#     pcaTrain, pcaTest, _ = pca(x_train, x_test, nComponents=m)
+#     results_train = crossval_LR(pcaTrain, y_train)
+#     results_test = crossval_LR(pcaTest, y_test) 
+#     if results_train > best:
+#         best = results_train
+#         best_m = m
+#     trainingError.append(results_train)
+#     testingError.append(results_test)
+# print(f'optimal number of principal components: {best_m}')
+# print(f'score: {best}')
+# plotTrainTestPerformance(trainingError, testingError, 'Principal Components')
 
 
 

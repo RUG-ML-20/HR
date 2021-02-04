@@ -10,6 +10,7 @@ import numpy as np
 import decimal
 import os
 import matplotlib as plt
+from tqdm import tqdm
 
 
 # Architecture
@@ -91,7 +92,7 @@ def sequential_layers_conv():
     return layer
 
 
-def train_cnn(x, y, epochs=65, learningRate=0.008, l2_weight_decay=0.0002, batch_size=20):
+def train_cnn(x, y, epochs=40, learningRate=0.01, l2_weight_decay=0.001, batch_size=20):
     x, y = matrices_to_tensors(x, y)
     model = Net()
     model = model.float()
@@ -170,37 +171,45 @@ def crossvalidationCNN(x, y, k):
     # eg. learning_rate = m, batch_size = m ...
     # also declare what you change for the graph legend
     # type 'architecture' if changing architecture, make there only be 1 step 
-    change = 'architecture'
-    start = 0
-    stop = 1
-    step = 1
-
+    change = 'Learning Rate'
+    start = 0.001
+    stop = 0.01
+    step = 0.0005
 
     # new folder for each new run, except if ran size is 1
     # file with list of ave accuracies
     # plot 
     num = get_run_number('data/numberOfOptimisations.txt')
-    print(num)
     newfile = f'data/optimisations/opt_{num}'
     os.makedirs(newfile,exist_ok = True)
-    for m in np.arange(start, stop, step):  # loop over given m settings
-        mFile = f'{newfile}/{change}_ {m}'
+    best_m = 0
+    best_m_acc = 0
+    m_range = tqdm(np.arange(start, stop, step))
+    print(f'training and evaluating {k*len(m_range)} models')
+
+    for m in m_range:  # loop over given m settings
+        mFile = f'{newfile}/{change}_{m}'
         os.makedirs(mFile, exist_ok= True)
         acc_train = list()
         acc_test = list()
         for fold in range(0, k):  # train a new model for each fold and for each m
             train_x, train_y, test_x, test_y = get_fold(folds_x, folds_y, fold)
-            model, loss = train_cnn(train_x, train_y, learningRate=0.007, epochs=1, l2_weight_decay=m)
+            model, loss = train_cnn(train_x, train_y, learningRate=m)
             acc, _, _, _ = eval_cnn(model, train_x, train_y)
             acc_train.append(acc)
             acc, _, _, _ = eval_cnn(model, test_x, test_y)
             acc_test.append(acc)
-        acc_train_m.append(np.mean(acc_train))
-        acc_test_m.append(np.mean(acc_test))
+        mean_train_acc = np.mean(acc_train)
+        mean_test_acc = np.mean(acc_test)
+        acc_train_m.append(mean_train_acc)
+        acc_test_m.append(mean_test_acc)
+        if mean_test_acc > best_m_acc:
+            best_m_acc = mean_test_acc
+            best_m = m
         m_list.append(m)
         save_model(mFile, model,  acc_test_m[-1])
         save_accuracies(mFile, acc_test)
-
+    save_best_m(newfile,change,best_m, best_m_acc)
     return acc_train_m, acc_test_m, m_list, change, newfile
 
 
@@ -259,7 +268,7 @@ def test_model(x_train, y_train, x_test, y_test):
     os.makedirs(new_file, exist_ok= True)
     os.makedirs(plots_file, exist_ok= True)
     #i want to save the model summary, the images, and the accuracies
-    # Train and test several models for average testing accuracy
+    #Train and test several models for average testing accuracy
     x_train, x_test = vectors_to_matrices(x_train), vectors_to_matrices(x_test)
     accuracy = []
     for i in range(5):

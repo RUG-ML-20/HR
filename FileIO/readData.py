@@ -75,4 +75,8 @@ def save_accuracies(filename, arr):
     array = arr
     with open(f"{filename}/accuracies.txt", "w") as output:
         output.write(str(array))
-    
+
+def save_best_m(filename,changed, m, acc):
+    with open(f"{filename}/optimal_m.txt", "w") as output:
+        output.write(f'optimal {changed} value: {m} with an accuracy of {acc}')
+
