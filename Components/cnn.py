@@ -184,17 +184,17 @@ def crossvalidationCNN(x, y, k):
     os.makedirs(newfile,exist_ok = True)
     best_m = 0
     best_m_acc = 0
-    m_range = tqdm(np.arange(start, stop, step))
+    m_range = np.arange(start, stop, step)
     print(f'training and evaluating {k*len(m_range)} models')
 
-    for m in m_range:  # loop over given m settings
+    for m in tqdm(m_range):  # loop over given m settings
         mFile = f'{newfile}/{change}_{m}'
         os.makedirs(mFile, exist_ok= True)
         acc_train = list()
         acc_test = list()
         for fold in range(0, k):  # train a new model for each fold and for each m
             train_x, train_y, test_x, test_y = get_fold(folds_x, folds_y, fold)
-            model, loss = train_cnn(train_x, train_y, learningRate=m)
+            model, loss = train_cnn(train_x, train_y,epochs = 1,batch_size=2121212, learningRate=m)
             acc, _, _, _ = eval_cnn(model, train_x, train_y)
             acc_train.append(acc)
             acc, _, _, _ = eval_cnn(model, test_x, test_y)
