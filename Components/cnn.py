@@ -188,8 +188,8 @@ def crossvalidationCNN(x, y, k):
     print(f'training and evaluating {k*len(m_range)} models')
 
     for m in tqdm(m_range, desc='m values', position= 0):  # loop over given m settings
-        mFile = f'{newfile}/{change}_{m}'
-        os.makedirs(mFile, exist_ok= True)
+        # mFile = f'{newfile}/{change}_{m}'
+        # os.makedirs(mFile, exist_ok= True)
         acc_train = list()
         acc_test = list()
         for fold in tqdm(range(0, k), desc= 'folds', position= 1, leave = False):  # train a new model for each fold and for each m
