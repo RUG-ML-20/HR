@@ -92,7 +92,7 @@ def sequential_layers_conv():
     return layer
 
 
-def train_cnn(x, y, epochs=40, learningRate=0.01, l2_weight_decay=0.001, batch_size=20):
+def train_cnn(x, y, epochs=65, learningRate=0.005, l2_weight_decay=0.001, batch_size=20):
     x, y = matrices_to_tensors(x, y)
     model = Net()
     model = model.float()
@@ -172,9 +172,9 @@ def crossvalidationCNN(x, y, k):
     # also declare what you change for the graph legend
     # type 'architecture' if changing architecture, make there only be 1 step 
     change = 'Learning Rate'
-    start = 0.001
-    stop = 0.01
-    step = 0.0005
+    start = 0.01
+    stop = 0.005
+    step = -0.0002
 
     # new folder for each new run, except if ran size is 1
     # file with list of ave accuracies
@@ -187,29 +187,28 @@ def crossvalidationCNN(x, y, k):
     m_range = np.arange(start, stop, step)
     print(f'training and evaluating {k*len(m_range)} models')
 
-    for m in tqdm(m_range):  # loop over given m settings
+    for m in tqdm(m_range, desc='m values', position= 0):  # loop over given m settings
         mFile = f'{newfile}/{change}_{m}'
         os.makedirs(mFile, exist_ok= True)
         acc_train = list()
         acc_test = list()
-        for fold in range(0, k):  # train a new model for each fold and for each m
+        for fold in tqdm(range(0, k), desc= 'folds', position= 1, leave = False):  # train a new model for each fold and for each m
             train_x, train_y, test_x, test_y = get_fold(folds_x, folds_y, fold)
-            model, loss = train_cnn(train_x, train_y,epochs = 1,batch_size=2121212, learningRate=m)
+            model, loss = train_cnn(train_x, train_y, learningRate=m)
             acc, _, _, _ = eval_cnn(model, train_x, train_y)
             acc_train.append(acc)
             acc, _, _, _ = eval_cnn(model, test_x, test_y)
             acc_test.append(acc)
-        mean_train_acc = np.mean(acc_train)
-        mean_test_acc = np.mean(acc_test)
+        mean_train_acc = round(np.mean(acc_train),4)
+        mean_test_acc = round(np.mean(acc_test),4)
         acc_train_m.append(mean_train_acc)
         acc_test_m.append(mean_test_acc)
         if mean_test_acc > best_m_acc:
             best_m_acc = mean_test_acc
             best_m = m
-        m_list.append(m)
-        save_model(mFile, model,  acc_test_m[-1])
-        save_accuracies(mFile, acc_test)
-    save_best_m(newfile,change,best_m, best_m_acc)
+        m_list.append(round(m,4))
+    save_best_m(newfile,change,round(best_m,4), round(best_m_acc,4))
+    save_accuracies_sum(newfile, m_list, acc_train_m, acc_test_m)
     return acc_train_m, acc_test_m, m_list, change, newfile
 
 

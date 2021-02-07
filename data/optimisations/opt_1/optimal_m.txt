@@ -1,0 +1,1 @@
+optimal Learning Rate value: 0.0015 with an accuracy of 0.983

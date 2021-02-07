@@ -31,7 +31,6 @@ def pca(train, test, nComponents=2, plot=False):
         plt.bar(x=range(1, len(perVar) + 1), height=perVar, tick_label=labels)
         plt.ylabel('Percentage of Explained Varience')
         plt.xlabel('Principal Component')
-        plt.title('Scree Plot')
         plt.show()
     return pcaTrain, pcaTest, perVar
 

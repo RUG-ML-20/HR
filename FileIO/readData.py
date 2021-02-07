@@ -80,3 +80,8 @@ def save_best_m(filename,changed, m, acc):
     with open(f"{filename}/optimal_m.txt", "w") as output:
         output.write(f'optimal {changed} value: {m} with an accuracy of {acc}')
 
+def save_accuracies_sum(filename, m, train, test):
+    with open(f"{filename}/overall_accuracies.txt", "w") as output:
+        output.write(f'm,train,test\n')
+        for i in range(0,len(m)):
+            output.write(f'{round(m[i],4)},{train[i]},{test[i]}\n')

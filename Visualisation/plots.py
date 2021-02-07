@@ -62,7 +62,7 @@ def plotTrainTestPerformance(train, test, change,filename = None, x_values=[]):
     axes.set_ylim([0,1])
     plt.xlabel(change)
     plt.ylabel('Error rate')
-    plt.legend(['Training', 'Testing'], loc=4)
+    plt.legend(['Training', 'Testing'], loc=1)
     if filename:
         plt.savefig(f'{filename}/crossValidationPlot.png')
     else:
