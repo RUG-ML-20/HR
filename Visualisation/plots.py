@@ -59,7 +59,7 @@ def plotTrainTestPerformance(train, test, change,filename = None, x_values=[]):
         plt.plot(x_values, train)
         plt.plot(x_values, test)
     axes = plt.gca()
-    axes.set_ylim([0,1])
+    #axes.set_ylim([0,0.05 ])
     plt.xlabel(change)
     plt.ylabel('Error rate')
     plt.legend(['Training', 'Testing'], loc=1)
