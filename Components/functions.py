@@ -41,7 +41,7 @@ def linear_regression(train_x, train_y, test_x, test_y):
     testAccuracy = reg.score(test_x, test_y)
     return trainAccuracy, testAccuracy
 
-def crossval_LR(x,y):
+def crossval_LR(lr,x,y):
     lr = LinearRegression()
     return np.mean(cross_val_score(lr, x, y, cv = 10))
     

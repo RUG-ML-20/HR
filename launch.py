@@ -5,6 +5,7 @@ from Components import *
 from Visualisation import plotNumbers, plotTrainTestPerformance, plotWrongDigits, tsne_plots
 import sys
 from tqdm import tqdm
+from sklearn.linear_model import LinearRegression
 
 # ----------loading data-------------
 x_train, y_train, x_test, y_test = load(.5, plot=False)
@@ -13,27 +14,29 @@ x_train, y_train, x_test, y_test = load(.5, plot=False)
 # data_analysis(x_train, y_train, x_test, y_test)
 
 # ---------linear regression----------
-# print('linear regression scores')
-# print(f'training: {crossval_LR(x_train,y_train)}')
-# print(f'test: {crossval_LR(x_test,y_test)}')
-# trainingError = list()
-# testingError = list()
-# print('PCA')
-# print('finding optimal number of principal components')
-# best = 0
-# best_m = 0
-# for m in tqdm(range(1, 200 + 1)):
-#     pcaTrain, pcaTest, _ = pca(x_train, x_test, nComponents=m)
-#     results_train = crossval_LR(pcaTrain, y_train)
-#     results_test = crossval_LR(pcaTest, y_test) 
-#     if results_train > best:
-#         best = results_train
-#         best_m = m
-#     trainingError.append(results_train)
-#     testingError.append(results_test)
-# print(f'optimal number of principal components: {best_m}')
-# print(f'score: {best}')
-# plotTrainTestPerformance(trainingError, testingError, 'Principal Components')
+reg = LinearRegression().fit(x_train, y_train)
+print('linear regression scores')
+print(f'training: {crossval_LR(reg,x_train,y_train)}')
+print(f'test: {crossval_LR(reg,x_test,y_test)}')
+trainingError = list()
+testingError = list()
+print('PCA')
+print('finding optimal number of principal components')
+best = 0
+best_m = 0
+for m in tqdm(range(1, 200 + 1)):
+    pcaTrain, pcaTest, _ = pca(x_train, x_test, nComponents=m)
+    reg = LinearRegression().fit(pcaTrain, y_train)
+    results_train = crossval_LR(reg,pcaTrain, y_train)
+    results_test = crossval_LR(reg,pcaTest, y_test) 
+    if results_train > best:
+        best = results_train
+        best_m = m
+    trainingError.append(results_train)
+    testingError.append(results_test)
+print(f'optimal number of principal components: {best_m}')
+print(f'score: {best}')
+plotTrainTestPerformance(trainingError, testingError, 'Principal Components')
 
 
 
@@ -63,7 +66,7 @@ x_train, y_train, x_test, y_test = load(.5, plot=False)
 # test_model(x_train,y_train, x_test, y_test)
 
 #----------replot data--------------#
-optfoldernum = 8
-folder = f'data/optimisations/opt_{optfoldernum}'
-m, train, test = read_results(folder)
-plotTrainTestPerformance(train, test, 'epochs', x_values=m)
+# optfoldernum = 8
+# folder = f'data/optimisations/opt_{optfoldernum}'
+# m, train, test = read_results(folder)
+# plotTrainTestPerformance(train, test, 'epochs', x_values=m)
