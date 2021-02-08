@@ -172,9 +172,9 @@ def crossvalidationCNN(x, y, k):
     # also declare what you change for the graph legend
     # type 'architecture' if changing architecture, make there only be 1 step 
     change = 'Learning Rate'
-    start = 0.01
-    stop = 0.005
-    step = -0.0002
+    start = 1
+    stop = 100
+    step = 1
 
     # new folder for each new run, except if ran size is 1
     # file with list of ave accuracies
@@ -194,7 +194,7 @@ def crossvalidationCNN(x, y, k):
         acc_test = list()
         for fold in tqdm(range(0, k), desc= 'folds', position= 1, leave = False):  # train a new model for each fold and for each m
             train_x, train_y, test_x, test_y = get_fold(folds_x, folds_y, fold)
-            model, loss = train_cnn(train_x, train_y, learningRate=m)
+            model, loss = train_cnn(train_x, train_y, epochs=m)
             acc, _, _, _ = eval_cnn(model, train_x, train_y)
             acc_train.append(acc)
             acc, _, _, _ = eval_cnn(model, test_x, test_y)
