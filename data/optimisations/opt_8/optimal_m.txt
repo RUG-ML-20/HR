@@ -1,0 +1,1 @@
+optimal epoch value: 17 with an accuracy of 0.984
