@@ -1,6 +1,6 @@
 import numpy as np
 import random as rd
-from FileIO import load
+from FileIO import *
 from Components import *
 from Visualisation import plotNumbers, plotTrainTestPerformance, plotWrongDigits, tsne_plots
 import sys
@@ -55,10 +55,15 @@ x_train, y_train, x_test, y_test = load(.5, plot=False)
 
 # ------------cross-validation----------------
 
-train, test, m, change, saveLocation = crossvalidationCNN(x_train, y_train, 10)
-plotTrainTestPerformance(train, test, change, saveLocation, x_values=m)
+# train, test, m, change, saveLocation = crossvalidationCNN(x_train, y_train, 10)
+# plotTrainTestPerformance(train, test, change, saveLocation, x_values=m)
 
 # ---------Testing model----------
 
 # test_model(x_train,y_train, x_test, y_test)
 
+#----------replot data--------------#
+optfoldernum = 8
+folder = f'data/optimisations/opt_{optfoldernum}'
+m, train, test = read_results(folder)
+plotTrainTestPerformance(train, test, 'epochs', x_values=m)

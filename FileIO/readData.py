@@ -85,3 +85,21 @@ def save_accuracies_sum(filename, m, train, test):
         output.write(f'm,train,test\n')
         for i in range(0,len(m)):
             output.write(f'{round(m[i],4)},{train[i]},{test[i]}\n')
+
+def read_results(filename):
+    file1 = open(f"{filename}/overall_accuracies.txt", "r")
+    lines = file1.readlines()
+    m = list()
+    train = list()
+    test = list()
+    #traverse through lines one by one
+    for line in lines:
+        if not line.split(',')[0] == "m":
+
+            split = line.split(',')
+            m.append(float(split[0]))
+            train.append(float(split[1]))
+            test.append(float(split[2]))
+
+    file1.close
+    return m, train, test
