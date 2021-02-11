@@ -4,7 +4,6 @@ import torch
 
 # returns the matrix representation of a vector and if plot = True plots the digit
 def vector_to_matrix(pic):
-    picmatreverse = np.zeros((15, 16))
     # the filling is done column wise
     picmatreverse = -pic.reshape(15, 16, order='F')
     picmat = np.zeros((15, 16))
