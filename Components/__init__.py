@@ -14,3 +14,7 @@ from Components.cnn import test_model
 from Components.cnn import print_layers
 from Components.functions import randomParameters
 from Visualisation.plots import plot_hidden_layers
+from Components.functions import get_fold
+from Components.functions import split_check
+from Components.functions import float_range
+from Components.functions import test_LR

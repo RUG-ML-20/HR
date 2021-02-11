@@ -6,6 +6,9 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import cross_val_score
 from sklearn import preprocessing
 import matplotlib.pyplot as plt
+from tqdm import tqdm
+from Visualisation.plots import plotTrainTestPerformance
+import decimal
 
 
 
@@ -41,9 +44,7 @@ def linear_regression(train_x, train_y, test_x, test_y):
     testAccuracy = reg.score(test_x, test_y)
     return trainAccuracy, testAccuracy
 
-def crossval_LR(lr,x,y):
-    lr = LinearRegression()
-    return np.mean(cross_val_score(lr, x, y, cv = 10))
+ 
     
 def data_analysis(train_x, train_y, test_x, test_y):
     all_xs = np.concatenate((train_x, test_x), axis=0)
@@ -82,3 +83,101 @@ def randomParameters():
     batchSize = rd.choice(batchSizes)
 
     return epoch, learningRate, l2, batchSize
+
+def crossval_LR(x,y,k, pca_run = False):
+    total = x.shape[0]
+    k = split_check(total, k)
+    bin_size = int(total / k)
+    folds_x = np.array(np.array_split(x, k))
+    folds_y = np.array(np.split(y, k))
+    acc_train_m = list()
+    acc_test_m = list()
+    m_list = list()
+    change  = "principal components"
+    best_m = 0
+    best_m_acc = 0 
+    if pca_run:
+        m_range = np.arange(1, 241, 1)
+    else:
+        m_range = range(0,1)
+    print(f'training and evaluating {k*len(m_range)} models')
+    for m in tqdm(m_range, desc='PCs', position= 0):  # loop over given m settings
+        acc_train = list()
+        acc_test = list()
+        for fold in range(0, k):  # train a new model for each fold and for each m
+            train_x, train_y, test_x, test_y = get_fold(folds_x, folds_y, fold)
+            if pca_run:
+                train_x, test_x, _ = pca(train_x, test_x, nComponents=m)
+            reg = LinearRegression().fit(train_x, train_y)
+            results_train = reg.score(train_x, train_y)
+            results_test = reg.score(test_x, test_y)
+            acc_train.append(results_train)
+            acc_test.append(results_test)
+        mean_train_acc = round(np.mean(acc_train),4)
+        mean_test_acc = round(np.mean(acc_test),4)
+        acc_train_m.append(mean_train_acc)
+        acc_test_m.append(mean_test_acc)
+        if mean_test_acc > best_m_acc:
+            best_m_acc = mean_test_acc
+            best_m = m
+    return acc_train_m, acc_test_m, best_m, best_m_acc
+   
+
+'''
+combines the split up folds into training and testing data. The choice of which fold
+is used for testing data is indicated by the index n
+'''
+
+
+def get_fold(folds_x, folds_y, n):
+    test_x = folds_x[n]
+    test_y = folds_y[n]
+    temp = np.repeat(True, folds_x.shape[0])
+    temp[n] = False
+    train_x = folds_x[temp]
+    train_y = folds_y[temp]
+    train_x = np.concatenate(train_x, axis=0)
+    train_y = np.concatenate(train_y, axis=0)
+    return train_x, train_y, test_x, test_y
+
+
+'''
+helper function to make sure data can be split up into k folds without caising shape issues,
+if there is an issue, the closest number to k that will not cause problems will be chosen
+with a preference to the higher number.
+'''
+
+
+def split_check(n, k):
+    if n % k == 0:
+        return k
+
+    u = 1
+    while n % (k + u) != 0 and (k - u < 2 or n % (k - u) != 0):
+        u += 1
+
+    if n % (k + u) == 0:
+        nk = k + u
+    elif n % (k - u) == 0:
+        nk = k - u
+
+    print(f'Warning: current K={k} for K-fold cross-validation would not divide folds correctly')
+    print(f'the new k: {nk} was chosen instead')
+    return nk
+
+
+def float_range(start, stop, step):
+    while start < stop:
+        yield float(start)
+        start += decimal.Decimal(step)
+
+
+def test_LR(x_train, y_train, x_test, y_test, pca_run = False, m = 0):
+    if pca_run:
+        x_train, x_test, _ = pca(x_train, x_test, nComponents=m)
+    accuracy = []
+    for i in range(10):
+        model = LinearRegression().fit(x_train, y_train)  
+        acc_test = model.score(x_test, y_test)
+        accuracy.append(acc_test)
+    return round(np.mean(accuracy),4)

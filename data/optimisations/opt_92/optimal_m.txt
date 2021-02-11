@@ -1,0 +1,1 @@
+optimal l2 regularization value: 0.0 with an accuracy of 0.979

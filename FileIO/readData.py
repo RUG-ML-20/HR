@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # shuffles the dataset randomly, so the order of digits is different every time
 def shuffling(X_train, y_train):
-    np.random.seed(30)
+    #np.random.seed(30)
     shuffled_rows = np.random.permutation(X_train.shape[0])
     return X_train[shuffled_rows], y_train[shuffled_rows]
 

@@ -1,0 +1,13 @@
+model accuracy: 0.9712
+Net(
+  (conv_layer_1): Conv2d(1, 6, kernel_size=(4, 3), stride=(1, 1), padding=(1, 1))
+  (batch_norm_1): BatchNorm2d(6, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (relu1): ReLU(inplace=True)
+  (conv_layer_2): Conv2d(6, 10, kernel_size=(4, 4), stride=(1, 1))
+  (batch_norm_2): BatchNorm2d(10, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (relu2): ReLU(inplace=True)
+  (max_pool): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (linear): Sequential(
+    (0): Linear(in_features=360, out_features=10, bias=True)
+  )
+)

@@ -3,7 +3,8 @@ from torch.autograd import Variable
 import torch.nn as nn
 from torch.functional import F
 from torch.optim import Adam, SGD
-from Components import *
+from Components.functions import *
+from Components.transformations import *
 from Visualisation import plotTrainTestPerformance, plotWrongDigits, plot_hidden_layers
 from FileIO import *
 import numpy as np
@@ -76,23 +77,7 @@ def sequential_layers_linear(to_linear):
 
     return layer
 
-
-# specify the network architecture here
-# redundant now
-def sequential_layers_conv():
-    layer = nn.Sequential(
-        nn.Conv2d(1, 6, kernel_size=(4, 3), stride=1, padding=1),
-        nn.BatchNorm2d(6),
-        nn.ReLU(inplace=True),
-        nn.Conv2d(6, 10, kernel_size=4, stride=1, padding=0),
-        nn.BatchNorm2d(10),
-        nn.ReLU(inplace=True),
-        nn.MaxPool2d(kernel_size=2, stride=2),
-    )
-    return layer
-
-
-def train_cnn(x, y, epochs=65, learningRate=0.005, l2_weight_decay=0.001, batch_size=20):
+def train_cnn(x, y, epochs=20, learningRate=0.007, l2_weight_decay=0.0012, batch_size=20):
     x, y = matrices_to_tensors(x, y)
     model = Net()
     model = model.float()
@@ -172,8 +157,8 @@ def crossvalidationCNN(x, y, k):
     # also declare what you change for the graph legend
     # type 'architecture' if changing architecture, make there only be 1 step 
     change = 'l2 regularization'
-    start = 0.02
-    stop = 0.3
+    start = 0
+    stop = 1
     step = 0.01
 
     # new folder for each new run, ecxcept if ran size is 1
@@ -194,7 +179,7 @@ def crossvalidationCNN(x, y, k):
         acc_test = list()
         for fold in tqdm(range(0, k), desc= 'folds', position= 1, leave = False):  # train a new model for each fold and for each m
             train_x, train_y, test_x, test_y = get_fold(folds_x, folds_y, fold)
-            model, loss = train_cnn(train_x, train_y, l2_weight_decay=m)
+            model, loss = train_cnn(train_x, train_y, l2_weight_decay=m, epochs=16, batch_size= 30)
             acc, _, _, _ = eval_cnn(model, train_x, train_y)
             acc_train.append(acc)
             acc, _, _, _ = eval_cnn(model, test_x, test_y)
@@ -212,53 +197,6 @@ def crossvalidationCNN(x, y, k):
     return acc_train_m, acc_test_m, m_list, change, newfile
 
 
-'''
-combines the split up folds into training and testing data. The choice of which fold
-is used for testing data is indicated by the index n
-'''
-
-
-def get_fold(folds_x, folds_y, n):
-    test_x = folds_x[n]
-    test_y = folds_y[n]
-    temp = np.repeat(True, folds_x.shape[0])
-    temp[n] = False
-    train_x = folds_x[temp]
-    train_y = folds_y[temp]
-    train_x = np.concatenate(train_x, axis=0)
-    train_y = np.concatenate(train_y, axis=0)
-    return train_x, train_y, test_x, test_y
-
-
-'''
-helper function to make sure data can be split up into k folds without caising shape issues,
-if there is an issue, the closest number to k that will not cause problems will be chosen
-with a preference to the higher number.
-'''
-
-
-def split_check(n, k):
-    if n % k == 0:
-        return k
-
-    u = 1
-    while n % (k + u) != 0 and (k - u < 2 or n % (k - u) != 0):
-        u += 1
-
-    if n % (k + u) == 0:
-        nk = k + u
-    elif n % (k - u) == 0:
-        nk = k - u
-
-    print(f'Warning: current K={k} for K-fold cross-validation would not divide folds correctly')
-    print(f'the new k: {nk} was chosen instead')
-    return nk
-
-
-def float_range(start, stop, step):
-    while start < stop:
-        yield float(start)
-        start += decimal.Decimal(step)
 
 def test_model(x_train, y_train, x_test, y_test):
     num = get_run_number('data/numberOfRuns.txt')
@@ -270,11 +208,11 @@ def test_model(x_train, y_train, x_test, y_test):
     #Train and test several models for average testing accuracy
     x_train, x_test = vectors_to_matrices(x_train), vectors_to_matrices(x_test)
     accuracy = []
-    for i in range(5):
-        model, loss = train_cnn(x_train, y_train, epochs=2)  
+    for i in tqdm(range(10)):
+        model, loss = train_cnn(x_train, y_train)  
         acc_test, wrong_x, wrong_predicted, wrong_y = eval_cnn(model, x_test, y_test)
         accuracy.append(acc_test)
-        print('model', i+1, 'accuracy =', acc_test)
         plotWrongDigits(wrong_x, wrong_predicted, wrong_y, plots_file, i)
+    print(np.mean(accuracy))
     save_model(new_file, model, sum(accuracy)/len(accuracy))
     save_accuracies(new_file,accuracy)
